@@ -13,9 +13,9 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.api.authservice.impl.JwtService;
+import com.api.authservice.impl.MyUserDetailsService;
 import com.api.controller.UserController;
-import com.api.service.impl.JwtService;
-import com.api.service.impl.MyUserDetailsService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -51,8 +51,10 @@ public class JwtFilter extends OncePerRequestFilter {
 					.getBean(MyUserDetailsService.class).loadUserByUsername(username);
 
 			if (jwtService.validateToken(token, userDetails)) {
+				logger.info("Token is valid, setting authentication in context");
 				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
 						null, userDetails.getAuthorities());
+				logger.info("Authentication Token: " + authToken);
 				authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 				SecurityContextHolder.getContext().setAuthentication(authToken);
 			}

@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import com.api.authservice.impl.JwtService;
 import com.api.model.User;
 import com.api.service.UserService;
-import com.api.service.impl.JwtService;
 
 import java.util.List;
 
@@ -39,8 +39,4 @@ public class UserController {
     	return userService.verifyUser(user);
     }
     
-    @GetMapping("/allUsers")
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
-    }
 }

@@ -1,4 +1,4 @@
-package com.api.service.impl;
+package com.api.authservice.impl;
 
 import java.util.List;
 
@@ -14,6 +14,7 @@ import com.api.controller.UserController;
 import com.api.model.User;
 import com.api.repository.UserRepository;
 import com.api.service.UserService;
+import com.api.validation.ObjectValidator;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -23,6 +24,9 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	private AuthenticationManager authenticationManager;
+	
+	@Autowired
+	private ObjectValidator<User> userValidator;
 
 	@Autowired
 	private JwtService jwtService;
@@ -31,13 +35,16 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public List<User> getAllUsers() {
-		// TODO Auto-generated method stub
+		logger.info("Inside getAllUsers method of UserServiceImpl");
+		logger.info("Exit from getAllUsers method of UserServiceImpl");
 		return userRepository.findAll();
 	}
 
 	@Override
 	public User addUser(User user) {
 		logger.info("Inside addUser method of UserServiceImpl");
+		logger.info("Validating user details");
+		userValidator.validate(user);
 		logger.info("Exit from addUser method of UserServiceImpl");
 		return userRepository.save(user);
 	}
@@ -46,6 +53,9 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public String verifyUser(User user) {
 		logger.info("Inside verifyUser method of UserServiceImpl");
+		logger.info("Validating user details");
+		userValidator.validate(user);
+		
 		Authentication authentication =
 			authenticationManager.authenticate(
 			new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
@@ -59,7 +69,8 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User UserByEmail(String email) {
-		// TODO Auto-generated method stub
+		logger.info("Inside UserByEmail method of UserServiceImpl");
+		logger.info("Exit from UserByEmail method of UserServiceImpl");
 		return userRepository.findByEmail(email);
 	}
 

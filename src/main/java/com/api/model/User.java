@@ -25,17 +25,17 @@ public class User {
     private Long id;
 
     @NotNull(message = "Email should be not null")
-    @NotNull(message = "Email should be not empty")
+    @NotEmpty(message = "Email should be not empty")
     @Column(unique=true)
     private String email;
     @NotNull(message = "Password should be not null")
-    @NotNull(message = "Password should be not empty")
+    @NotEmpty(message = "Password should be not empty")
     private String password;
     @NotNull(message = "username should be not null")
-    @NotNull(message = "username should be not empty")
+    @NotEmpty(message = "username should be not empty")
     private String username;
     @NotNull(message = "Phone should be not null")
-    @NotNull(message = "Phone should be not empty")
+    @NotEmpty(message = "Phone should be not empty")
     private String phone;
 
     // "DRIVER" or "PASSENGER"

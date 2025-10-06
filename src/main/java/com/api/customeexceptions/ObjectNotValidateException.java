@@ -13,8 +13,5 @@ public class ObjectNotValidateException extends RuntimeException {
 
 	public Set<String> getErrorMessage() {
 		return errorMessage;
-	}
-	
-	
-	
+	}	
 }

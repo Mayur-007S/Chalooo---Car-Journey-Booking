@@ -1,4 +1,4 @@
-package com.api.service.impl;
+package com.api.authservice.impl;
 
 
 import java.security.NoSuchAlgorithmException;

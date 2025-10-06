@@ -37,15 +37,15 @@ public class Trip {
     private String destination;
     
     @NotNull(message = "dateTime should be not null")
-    @NotNull(message = "dateTime should be not empty")
+    @NotEmpty(message = "dateTime should be not empty")
     private LocalDateTime dateTime;
     
     @NotNull(message = "totalSeats should be not null")
-    @NotNull(message = "totalSeats should be not empty")
+    @NotEmpty(message = "totalSeats should be not empty")
     private int totalSeats;
     
     @NotNull(message = "availableSeats should be not null")
-    @NotNull(message = "availableSeats should be not empty")
+    @NotEmpty(message = "availableSeats should be not empty")
     private int availableSeats;
 
     @ManyToOne

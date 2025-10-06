@@ -1,4 +1,4 @@
-package com.api.service.impl;
+package com.api.authservice.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

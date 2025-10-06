@@ -1,6 +1,5 @@
 package com.api.config;
 
-import org.aspectj.lang.annotation.SuppressAjWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,9 +41,14 @@ public class SecurityConfig {
 		return http.csrf(Customizer -> Customizer.disable())
 				// This is used to disable csrf
 				.authorizeHttpRequests(request -> 
-				request
-						.requestMatchers("register", "login").permitAll().anyRequest()
-						.authenticated())
+			    request
+			        .requestMatchers("/register", "/login").permitAll()
+			        .requestMatchers("/admin/**").hasRole("ADMIN")
+			        .requestMatchers("/driver/**").hasAnyRole("DRIVER","ADMIN")
+			        .requestMatchers("/passenger/**").hasAnyRole("PASSENGER","ADMIN")
+			        .anyRequest().authenticated()
+				)
+
 //				.formLogin(Customizer.withDefaults()) 
 				.httpBasic(Customizer.withDefaults())
 				// This is used to enable form login
