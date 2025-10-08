@@ -10,6 +10,6 @@ public interface BookingService {
 	
 	List<Booking> getAll();
 	
-	Booking getBookingByTrip(String trip_name);
+	Booking getBookingByPassengerName(String pass_name);
 	
 }

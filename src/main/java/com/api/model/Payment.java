@@ -1,5 +1,8 @@
 package com.api.model;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,6 +37,12 @@ public class Payment {
     @NotNull(message = "method should be not null")
     @NotEmpty(message = "method should be not empty")
     private String method; 
+    @NotNull(message = "date should be not null")
+    @NotEmpty(message = "date should be not empty")
+    private LocalDate date;
+    @NotNull(message = "time should be not null")
+    @NotEmpty(message = "time should be not empty")
+    private LocalTime time;
     
 	public Payment() {
 	}
@@ -86,6 +95,22 @@ public class Payment {
 
 	public void setMethod(String method) {
 		this.method = method;
+	}
+
+	public LocalDate getDate() {
+		return date;
+	}
+
+	public void setDate(LocalDate date) {
+		this.date = date;
+	}
+
+	public LocalTime getTime() {
+		return time;
+	}
+
+	public void setTime(LocalTime time) {
+		this.time = time;
 	}
     
     

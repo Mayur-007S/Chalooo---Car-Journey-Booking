@@ -2,14 +2,15 @@ package com.api.service;
 
 import java.util.List;
 
+import com.api.dto.TripRequestDTO;
 import com.api.model.Trip;
 
 public interface TripService {
 
-	Trip addTrip(Trip trip);
+	Trip addTrip(TripRequestDTO trip);
 	
 	List<Trip> getALL();
 	
-	Trip GetBySourceAndDestination(String source, String Desti);
+	List<Trip> GetBySourceAndDestination(String source, String Desti);
 	
 }

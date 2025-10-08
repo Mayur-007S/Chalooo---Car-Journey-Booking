@@ -1,5 +1,8 @@
 package com.api.model;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -39,6 +42,12 @@ public class Review {
     @NotNull(message = "comment should be not null")
     @NotEmpty(message = "comment should be not empty")
     private String comment;
+    @NotNull(message = "date should be not null")
+    @NotEmpty(message = "date should be not empty")
+    private LocalDate date;
+    @NotNull(message = "time should be not null")
+    @NotEmpty(message = "time should be not empty")
+    private LocalTime time;
     
 	public Review() {
 		super();
@@ -88,6 +97,18 @@ public class Review {
 	}
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+	public LocalDate getDate() {
+		return date;
+	}
+	public void setDate(LocalDate date) {
+		this.date = date;
+	}
+	public LocalTime getTime() {
+		return time;
+	}
+	public void setTime(LocalTime time) {
+		this.time = time;
 	}
     
     

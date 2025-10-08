@@ -1,5 +1,7 @@
 package com.api.model;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,10 +12,6 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "bookings")
@@ -30,9 +28,19 @@ public class Booking {
     @ManyToOne
     @JoinColumn(name = "passenger_id")
     private User passenger; // must have role "PASSENGER"
+    
     @NotNull(message = "seatsBooked should be not null")
     @NotEmpty(message = "seatsBooked should be not empty")
     private int seatsBooked;
+    
+    @NotNull(message = "date Booked should be not null")
+    @NotEmpty(message = "date Booked should be not empty")
+    private LocalDate date;
+    
+    @NotNull(message = "time Booked should be not null")
+    @NotEmpty(message = "time Booked should be not empty")
+    private LocalTime time;
+    
     @NotNull(message = "status should be not null")
     @NotEmpty(message = "status should be not empty")
     private String status; // REQUESTED, CONFIRMED, CANCELLED
@@ -40,12 +48,10 @@ public class Booking {
     @OneToOne(mappedBy = "booking")
     private Payment payment;
 
-	public Booking() {
-		// TODO Auto-generated constructor stub
-	}
+	public Booking() {}
 
-	public Booking(Long id, Trip trip, User passenger, int seatsBooked, String status, Payment payment) {
-		super();
+	public Booking(Long id, Trip trip, User passenger, int seatsBooked, 
+			String status, Payment payment) {
 		this.id = id;
 		this.trip = trip;
 		this.passenger = passenger;
@@ -101,7 +107,21 @@ public class Booking {
 	public void setPayment(Payment payment) {
 		this.payment = payment;
 	}
-    
-	
+
+	public LocalDate getDate() {
+		return date;
+	}
+
+	public void setDate(LocalDate date) {
+		this.date = date;
+	}
+
+	public LocalTime getTime() {
+		return time;
+	}
+
+	public void setTime(LocalTime time) {
+		this.time = time;
+	}
     
 }

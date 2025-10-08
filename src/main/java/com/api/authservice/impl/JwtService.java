@@ -46,7 +46,9 @@ public class JwtService{
 				.add(claims)
 				.subject(username)
 				.issuedAt(new Date(System.currentTimeMillis()))
-				.expiration(new Date(System.currentTimeMillis() + 60 * 60 * 60)) // 
+				.expiration(java.sql.Timestamp.valueOf(
+					    java.time.LocalDateTime.now().plusMonths(6)
+				))
 				.and()
 				.signWith(getKey())
 				.compact();   

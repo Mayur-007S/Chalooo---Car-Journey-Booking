@@ -42,10 +42,10 @@ public class SecurityConfig {
 				// This is used to disable csrf
 				.authorizeHttpRequests(request -> 
 			    request
-			        .requestMatchers("/register", "/login").permitAll()
-			        .requestMatchers("/admin/**").hasRole("ADMIN")
-			        .requestMatchers("/driver/**").hasAnyRole("DRIVER","ADMIN")
-			        .requestMatchers("/passenger/**").hasAnyRole("PASSENGER","ADMIN")
+			        .requestMatchers("api/v1/user/register", "api/v1/user/login").permitAll()
+			        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+			        .requestMatchers("/api/v1/driver/**").hasAnyRole("DRIVER","ADMIN")
+			        .requestMatchers("/api/v1/passenger/**").hasAnyRole("PASSENGER","ADMIN")
 			        .anyRequest().authenticated()
 				)
 

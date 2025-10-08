@@ -15,7 +15,7 @@ import com.api.model.User;
 import com.api.service.UserService;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("api/v1/admin")
 public class AdminController {
 
 	@Autowired

@@ -1,5 +1,6 @@
 package com.api.model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,7 +23,7 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "trips")
-public class Trip {
+public class Trip implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -37,15 +38,12 @@ public class Trip {
     private String destination;
     
     @NotNull(message = "dateTime should be not null")
-    @NotEmpty(message = "dateTime should be not empty")
     private LocalDateTime dateTime;
     
     @NotNull(message = "totalSeats should be not null")
-    @NotEmpty(message = "totalSeats should be not empty")
     private int totalSeats;
     
     @NotNull(message = "availableSeats should be not null")
-    @NotEmpty(message = "availableSeats should be not empty")
     private int availableSeats;
 
     @ManyToOne
