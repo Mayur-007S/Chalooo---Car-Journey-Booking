@@ -2,6 +2,10 @@ package com.api.model;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,6 +26,7 @@ public class Booking {
     private Long id;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "trip_id")
     private Trip trip;
 
@@ -30,21 +35,19 @@ public class Booking {
     private User passenger; // must have role "PASSENGER"
     
     @NotNull(message = "seatsBooked should be not null")
-    @NotEmpty(message = "seatsBooked should be not empty")
     private int seatsBooked;
     
     @NotNull(message = "date Booked should be not null")
-    @NotEmpty(message = "date Booked should be not empty")
     private LocalDate date;
     
     @NotNull(message = "time Booked should be not null")
-    @NotEmpty(message = "time Booked should be not empty")
     private LocalTime time;
     
     @NotNull(message = "status should be not null")
     @NotEmpty(message = "status should be not empty")
     private String status; // REQUESTED, CONFIRMED, CANCELLED
 
+    @JsonManagedReference
     @OneToOne(mappedBy = "booking")
     private Payment payment;
 

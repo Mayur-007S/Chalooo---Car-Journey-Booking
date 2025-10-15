@@ -32,7 +32,7 @@ public class PaymentServiceImpl implements PaymentService {
 	@Override
 	public Payment getOne(int payment_id) {
 		// TODO Auto-generated method stub
-		return null;
+		return repository.findById(payment_id);
 	}
 
 }

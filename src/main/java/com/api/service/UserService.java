@@ -17,4 +17,6 @@ public interface UserService {
 	public User UserByUsername(String username);
 	
 	public String verifyUser(User user);
+	
+	public User getOneUser(int uid);
 }

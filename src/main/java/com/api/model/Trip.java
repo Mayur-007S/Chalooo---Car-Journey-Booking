@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -55,6 +56,7 @@ public class Trip implements Serializable{
     private Car car;
 
     @OneToMany(mappedBy = "trip")
+    @JsonManagedReference
     private List<Booking> bookings;
 
 	public Trip() {

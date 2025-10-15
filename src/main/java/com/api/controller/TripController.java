@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.api.customeexceptions.NotFoundException;
 import com.api.dto.TripRequestDTO;
+import com.api.dto.TripResponseDTO;
 import com.api.model.Trip;
 import com.api.service.TripService;
 
@@ -37,30 +38,34 @@ public class TripController {
 		if(t != null) {
 			return ResponseEntity.status(HttpStatus.CREATED).body(dto);
 		}
-		throw new NullPointerException("Trip Object is null "+dto);
+		throw new NullPointerException("Trip Not Added Object is null. "
+				+ "Please enter information properly"+dto);
 	}
 	
 	@GetMapping("/getall")
-	public ResponseEntity<List<Trip>> getAllTrips(){
+	public ResponseEntity<List<TripResponseDTO>> getAllTrips(){
 		log.info("Inside get all Trip Controller");
-		List<Trip> trips = service.getALL();
+		List<TripResponseDTO> trips = service.getALL();
 		if(!trips.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.OK).body(trips);
 		}
-		throw new NotFoundException("No Trips found in database");
+		throw new NotFoundException("No Trips found in database. | "
+				+ "please retry again after 5 minutes");
 	}
 	
 	@GetMapping("/getSD")
-	public ResponseEntity<List<Trip>> getTripBySourceAndDestination(
+	public ResponseEntity<List<TripResponseDTO>> getTripBySourceAndDestination(
 			@RequestParam(value = "source", required = true) String source,
 			@RequestParam(value = "dest", required = true) String dest
 			){
 		log.info("Inside get Trip by source and destination Controller");
-		List<Trip> trips = service.GetBySourceAndDestination(source, dest);
+		List<TripResponseDTO> trips = service.GetBySourceAndDestination(source, dest);
 		if(!trips.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.OK).body(trips);
 		}
-		throw new NotFoundException("No Trips found in database");
+		throw new NotFoundException("No Trips found in database with source: "+source+" "
+		+"Destination: "+dest+" | "+"Please enter available source and destination");
 	}
+	
 	
 }

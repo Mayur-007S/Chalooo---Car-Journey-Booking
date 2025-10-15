@@ -2,14 +2,15 @@ package com.api.service;
 
 import java.util.List;
 
+import com.api.dto.BookRequestDTO;
 import com.api.model.Booking;
 
 public interface BookingService {
 
-	Booking addBooking(Booking booking);
+	Booking addBooking(BookRequestDTO dto);
 	
 	List<Booking> getAll();
 	
-	Booking getBookingByPassengerName(String pass_name);
+	List<Booking> getBookingByPassengerName(long id);
 	
 }

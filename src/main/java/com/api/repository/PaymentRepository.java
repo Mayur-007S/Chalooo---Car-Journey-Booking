@@ -6,4 +6,6 @@ import com.api.model.Payment;
 
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
+	Payment findById(int id);
+	
 }

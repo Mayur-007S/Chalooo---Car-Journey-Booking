@@ -1,6 +1,8 @@
 package com.api.customeexceptions;
 
-import java.util.Set;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 public class ErrorResponse {
@@ -8,13 +10,13 @@ public class ErrorResponse {
 	private String id;
 	private String message;
 	private String details;
-	private long timestamp;
+	private String timestamp;
 	
 	public ErrorResponse(String message, String details) {
 		this.id = UUID.randomUUID().toString();
 		this.message = message;
 		this.details = details;
-		this.timestamp = System.currentTimeMillis();
+		this.timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
 	}
 
 	public String getId() {
@@ -29,7 +31,7 @@ public class ErrorResponse {
 		return details;
 	}
 
-	public long getTimestamp() {
+	public String getTimestamp() {
 		return timestamp;
 	}
 	

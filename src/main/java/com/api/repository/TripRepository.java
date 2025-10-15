@@ -14,4 +14,5 @@ public interface TripRepository extends JpaRepository<Trip, Long>{
 	@Query(value = "SELECT * FROM trips WHERE source = :s and destination = :d", nativeQuery = true)
 	List<Trip> getBySourceAndDestination(@Param("s") String source, @Param("d") String Desti);
 	
+	Trip findById(int id);
 }
