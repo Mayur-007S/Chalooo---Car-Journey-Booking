@@ -23,7 +23,6 @@ import com.api.service.BookingService;
 import com.api.service.UserService;
 
 @RestController
-@RequestMapping("/api/v1/passenger")
 public class BookingController {
 
 	@Autowired
@@ -34,9 +33,9 @@ public class BookingController {
 	
 	private Logger log = LoggerFactory.getLogger(BookingController.class);
 	
-	@PostMapping("/bookings/add")
+	@PostMapping("/api/v1/passenger/bookings/add")
 	public ResponseEntity<Booking> addBookings(@RequestBody BookRequestDTO dto){
-		
+		log.info("Inside add bookings method");
 		Booking book = service.addBooking(dto);
 		if(book != null) {
 			return ResponseEntity.status(HttpStatus.CREATED).body(book);
@@ -44,8 +43,9 @@ public class BookingController {
 		throw new NullPointerException("The Booking is not added because of internal severm error.");
 	}
 	
-	@GetMapping("/bookings/getall")
+	@GetMapping("/api/v1/pad/bookings/getall")
 	public ResponseEntity<List<Booking>> getAllBookings(){
+		log.info("Inside get all bookings method");
 		List<Booking> listofbookings = service.getAll();
 		if(!listofbookings.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.OK).body(listofbookings);
@@ -53,17 +53,24 @@ public class BookingController {
 		throw new NotFoundException("The Booking is not added because of internal severm error.");
 	}
 	
-	@GetMapping("/bookings/getbypassengername")
+	@GetMapping("/api/v1/pad/bookings/getbypassengername")
 	public ResponseEntity<List<Booking>> getBookingByPassengerName(
 			@RequestParam(value = "name",required = true) String name
 			){
-		User user = userService.UserByUsername(name);
-		List<Booking> listofbooking = service.getBookingByPassengerName(user.getId());
-		if(user != null && !listofbooking.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.OK).body(listofbooking);
+		log.info("Inside get by passenger name bookings method");
+		User user = userService.UserByUsername(name.toLowerCase());
+		log.info("User: "+user);
+		if(user == null) {
+			throw new NotFoundException("Booking not foud with name: "+name
+					+" The given name that user is not found in database.");
 		}
-		throw new NotFoundException("Booking not foud with name: "+name
-				+" The given name that user is not found in database.");
-		
+		log.info("User ");
+		List<Booking> listofbooking = service.getBookingByPassengerName(user.getId());
+		log.info("listofbookings: "+listofbooking);
+		if(listofbooking == null) {
+			throw new NotFoundException("Booking not foud with name: "+name
+					+" The given name that user is not found in database.");
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(listofbooking);
 	}
 }

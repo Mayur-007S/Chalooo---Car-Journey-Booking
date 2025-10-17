@@ -1,17 +1,13 @@
 package com.api.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.api.customeexceptions.NotFoundException;
-import com.api.dto.TripRequestDTO;
-import com.api.dto.TripResponseDTO;
+import com.api.dto.TripDTO;
 import com.api.model.Car;
 import com.api.model.Trip;
 import com.api.model.User;
@@ -34,43 +30,51 @@ public class TripServiceImpl implements TripService {
 	private CarRepository carRepository;
 	
 	@Autowired
-	private ObjectValidator<Trip> objectValidator;
+	private ObjectValidator<Object> validator;
 	
 	private Logger log = LoggerFactory.getLogger(TripServiceImpl.class);
 	
 	@Override
-	public Trip addTrip(TripRequestDTO dto) {
+	public Trip addTrip(TripDTO dto) {
+		log.info("Inside add trip method");
 		Trip trip = new Trip();
-	    trip.setSource(dto.getSource());
-	    trip.setDestination(dto.getDestination());
-	    trip.setDateTime(dto.getDateTime());
-	    trip.setTotalSeats(dto.getTotalSeats());
-	    trip.setAvailableSeats(dto.getAvailableSeats());
+	    trip.setSource(dto.source().toLowerCase());
+	    trip.setDestination(dto.destination().toLowerCase());
+	    trip.setDateTime(dto.dateTime());
+	    trip.setTotalSeats(dto.totalSeats());
+	    trip.setAvailableSeats(dto.availableSeats());
 
-	    User driver = userRepository.findById(dto.getDriver_id())
+	    User driver = userRepository.findById(dto.driver_id())
 	            .orElseThrow(() -> new NotFoundException("Driver not found"));
-	    Car car = carRepository.findById(dto.getCar_id())
+	    Car car = carRepository.findById(dto.car_id())
 	            .orElseThrow(() -> new NotFoundException("Car not found"));
 
 	    trip.setDriver(driver);
 	    trip.setCar(car);
-
+	    
+	    validator.validate(trip);
+	    
 	    return repository.save(trip);
 	}
 
 	@Override
-	public List<TripResponseDTO> getALL() {
+	public List<TripDTO> getALL() {
 		log.info("Inside getall trip method");
 		List<Trip> trips = repository.findAll();
-
-		List<TripResponseDTO> dto = trips.stream()
-		    .map(trip -> new TripResponseDTO(
-		        trip.getId(),
+		
+		if(trips.isEmpty()) { throw new NotFoundException("No Trips Found in database. "
+				+ "Please try later."); }
+		
+		List<TripDTO> dto = trips.stream()
+		    .map(trip -> new TripDTO(
+		    	trip.getId(),
 		        trip.getSource(),
 		        trip.getDestination(),
 		        trip.getDateTime(),
 		        trip.getTotalSeats(),
-		        trip.getAvailableSeats()
+		        trip.getAvailableSeats(),
+		        trip.getCar().getId(),
+		        trip.getDriver().getId()
 		    ))
 		    .collect(Collectors.toList());
 
@@ -79,18 +83,23 @@ public class TripServiceImpl implements TripService {
 	}
 
 	@Override
-	public List<TripResponseDTO> GetBySourceAndDestination(String source, String Desti) {
-		log.info("Inside getall trip method");
-		List<Trip> trips = repository.findAll();
-
-		List<TripResponseDTO> dto = trips.stream()
-		    .map(trip -> new TripResponseDTO(
-		        trip.getId(),
+	public List<TripDTO> GetBySourceAndDestination(String source, String Desti) {
+		log.info("Inside get by source and destination trip method");
+		List<Trip> trips = repository.getBySourceAndDestination(source.toLowerCase(), Desti.toLowerCase());
+		
+		if(trips.isEmpty()) { throw new NotFoundException("No Trips Found with source: "+source
+				+ " Destination: "+ Desti +" !!!"); }
+		
+		List<TripDTO> dto = trips.stream()
+		    .map(trip -> new TripDTO(
+		    	trip.getId(),
 		        trip.getSource(),
 		        trip.getDestination(),
 		        trip.getDateTime(),
 		        trip.getTotalSeats(),
-		        trip.getAvailableSeats()
+		        trip.getAvailableSeats(),
+		        trip.getCar().getId(),
+		        trip.getDriver().getId()
 		    ))
 		    .collect(Collectors.toList());
 
@@ -99,8 +108,31 @@ public class TripServiceImpl implements TripService {
 
 	@Override
 	public Trip getOneTrip(int id) {
-		// TODO Auto-generated method stub
+		log.info("Inside get by id trip method");
 		return repository.findById(id);
+	}
+
+	@Override
+	public Trip updateTrip(long tid,TripDTO dto) {
+		log.info("Inside update trip method");
+		validator.validate(dto);
+		Trip trip = repository.findById(tid)
+				.orElseThrow(() -> new NotFoundException("Trip with id: "+tid+" "+"not found exception. !!!"));
+	    trip.setSource(dto.source().toLowerCase());
+	    trip.setDestination(dto.destination().toLowerCase());
+	    trip.setDateTime(dto.dateTime());
+	    trip.setTotalSeats(dto.totalSeats());
+	    trip.setAvailableSeats(dto.availableSeats());
+
+	    User driver = userRepository.findById(dto.driver_id())
+	            .orElseThrow(() -> new NotFoundException("Driver not found"));
+	    Car car = carRepository.findById(dto.car_id())
+	            .orElseThrow(() -> new NotFoundException("Car not found"));
+
+	    trip.setDriver(driver);
+	    trip.setCar(car);
+
+	    return repository.save(trip);
 	}
 
 }

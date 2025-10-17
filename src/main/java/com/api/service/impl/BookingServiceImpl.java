@@ -48,7 +48,7 @@ public class BookingServiceImpl implements BookingService {
 		book.setSeatsBooked(dto.seatsBooked());
 		book.setDate(dto.date());
 		book.setTime(dto.time());
-		book.setStatus(dto.status());
+		book.setStatus(dto.status().toUpperCase());
 		
 		log.info("trip_id: "+dto.trip_id());
 		log.info("passenger_id: "+dto.passenger_id());
@@ -84,8 +84,6 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public List<Booking> getBookingByPassengerName(long id) {
 		log.info("Inside get Booking By Trip method");
-		log.info("Call get all method");
-		log.info("Exit from get all method");
 		return repository.findByPassenger(id);
 	}
 

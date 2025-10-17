@@ -9,7 +9,7 @@ import com.api.model.Booking;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-	@Query(value = "SELECT * FROM bookings WHERE password_id = :pid", nativeQuery = true)
+	@Query(value = "SELECT * FROM bookings WHERE passenger_id = :pid", nativeQuery = true)
 	List<Booking> findByPassenger(@Param("pid") long pass_id);
 	
 //	long countByTrip(int tid);

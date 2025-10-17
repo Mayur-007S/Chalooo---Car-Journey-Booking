@@ -2,12 +2,15 @@ package com.api.service;
 
 import java.util.List;
 
+import com.api.dto.CarDTO;
 import com.api.model.Car;
 
 public interface CarService {
 
-	Car addCar(Car car);
+	Car addCar(CarDTO cardto);
 	
-	List<Car> getALl();
+	List<Car> getALLByOwner(String username);
+	
+	Car updateCar(long cid,CarDTO car);
 	
 }

@@ -26,25 +26,16 @@ public class Booking {
     private Long id;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonManagedReference
     @JoinColumn(name = "trip_id")
     private Trip trip;
 
     @ManyToOne
     @JoinColumn(name = "passenger_id")
     private User passenger; // must have role "PASSENGER"
-    
-    @NotNull(message = "seatsBooked should be not null")
     private int seatsBooked;
-    
-    @NotNull(message = "date Booked should be not null")
     private LocalDate date;
-    
-    @NotNull(message = "time Booked should be not null")
     private LocalTime time;
-    
-    @NotNull(message = "status should be not null")
-    @NotEmpty(message = "status should be not empty")
     private String status; // REQUESTED, CONFIRMED, CANCELLED
 
     @JsonManagedReference

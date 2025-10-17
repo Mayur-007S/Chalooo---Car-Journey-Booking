@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
 		logger.info("Inside addUser method of UserServiceImpl");
 		logger.info("Validating user details");
 		userValidator.validate(user);
-		logger.info("Exit from addUser method of UserServiceImpl");
+		
 		return userRepository.save(user);
 	}
 
@@ -71,18 +71,18 @@ public class UserServiceImpl implements UserService {
 	public User UserByEmail(String email) {
 		logger.info("Inside UserByEmail method of UserServiceImpl");
 		logger.info("Exit from UserByEmail method of UserServiceImpl");
-		return userRepository.findByEmail(email);
+		return userRepository.findByEmail(email.toLowerCase());
 	}
 
 	@Override
 	public User UserByUsername(String username) {
-		// TODO Auto-generated method stub
-		return null;
+		logger.info("Inside UserByName method of UserServiceImpl");
+		return userRepository.findByUsername(username.toLowerCase());
 	}
 
 	@Override
 	public User getOneUser(int uid) {
-		// TODO Auto-generated method stub
+		logger.info("Inside UserById method of UserServiceImpl");
 		return userRepository.findById(uid);
 	}
 

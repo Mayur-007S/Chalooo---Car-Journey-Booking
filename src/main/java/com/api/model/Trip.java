@@ -29,22 +29,10 @@ public class Trip implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
-    
-    @NotNull(message = "source should be not null")
-    @NotEmpty(message = "source should be not empty")
     private String source;
-    
-    @NotNull(message = "destination should be not empty")
-    @NotEmpty(message = "destination should be not empty")
     private String destination;
-    
-    @NotNull(message = "dateTime should be not null")
     private LocalDateTime dateTime;
-    
-    @NotNull(message = "totalSeats should be not null")
     private int totalSeats;
-    
-    @NotNull(message = "availableSeats should be not null")
     private int availableSeats;
 
     @ManyToOne
@@ -56,7 +44,7 @@ public class Trip implements Serializable{
     private Car car;
 
     @OneToMany(mappedBy = "trip")
-    @JsonManagedReference
+    @JsonBackReference
     private List<Booking> bookings;
 
 	public Trip() {

@@ -1,5 +1,7 @@
 package com.api.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,18 +24,14 @@ public class Car {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     
-    @NotNull(message = "Model should be not null")	@NotEmpty(message = "Model should be not empty")
     private String model;
     
-    @NotNull(message = "PlateNo should be not empty")
-	@NotEmpty(message = "PlateNo should be not empty")
     private String plateNo;
     
-    @NotNull(message = "Seates should be not null")
-    @NotEmpty(message = "Seates should be not empty")
     private int seats;
 
     @ManyToOne
+    @JsonManagedReference
     @JoinColumn(name = "owner_id")
     private User owner;
 
