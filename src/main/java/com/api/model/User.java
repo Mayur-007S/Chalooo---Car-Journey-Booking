@@ -46,7 +46,6 @@ public class User {
     private String role;
 
     // Relations:
-    @JsonBackReference
     @OneToMany(mappedBy = "owner")
     private List<Car> cars;       // If DRIVER
 

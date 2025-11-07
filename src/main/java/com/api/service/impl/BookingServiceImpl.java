@@ -1,6 +1,7 @@
 package com.api.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,8 +77,6 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public List<Booking> getAll() {
 		log.info("Inside getall bookings method");
-		log.info("Call get all bookings method");
-		log.info("Exit from get all bookings method");
 		return repository.findAll();
 	}
 
@@ -85,6 +84,12 @@ public class BookingServiceImpl implements BookingService {
 	public List<Booking> getBookingByPassengerName(long id) {
 		log.info("Inside get Booking By Trip method");
 		return repository.findByPassenger(id);
+	}
+
+	@Override
+	public Optional<Booking> getOne(long pid) {
+		// TODO Auto-generated method stub
+		return repository.findById(pid);
 	}
 
 }

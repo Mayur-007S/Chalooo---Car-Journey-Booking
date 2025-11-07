@@ -3,6 +3,9 @@ package com.api.model;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,7 +31,7 @@ public class Review {
     @ManyToOne
     @JoinColumn(name = "reviewer_id")
     private User reviewer; // any user
-
+    
     @ManyToOne
     @JoinColumn(name = "subject_id")
     private User subject; // driver or passenger
@@ -36,31 +39,18 @@ public class Review {
     @ManyToOne
     @JoinColumn(name = "trip_id")
     private Trip trip; // optional: review for specific trip
+  
     @NotNull(message = "rating should be not null")
-    @NotEmpty(message = "rating should be not empty")
-    private int rating;
+    private double rating;
+    
     @NotNull(message = "comment should be not null")
     @NotEmpty(message = "comment should be not empty")
     private String comment;
-    @NotNull(message = "date should be not null")
-    @NotEmpty(message = "date should be not empty")
+
     private LocalDate date;
-    @NotNull(message = "time should be not null")
-    @NotEmpty(message = "time should be not empty")
     private LocalTime time;
     
 	public Review() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-	public Review(Long id, User reviewer, User subject, Trip trip, int rating, String comment) {
-		super();
-		this.id = id;
-		this.reviewer = reviewer;
-		this.subject = subject;
-		this.trip = trip;
-		this.rating = rating;
-		this.comment = comment;
 	}
 	public Long getId() {
 		return id;
@@ -68,28 +58,28 @@ public class Review {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public User getReviewer() {
-		return reviewer;
+	public Long getReviewer() {
+		return reviewer.getId();
 	}
 	public void setReviewer(User reviewer) {
 		this.reviewer = reviewer;
 	}
-	public User getSubject() {
-		return subject;
+	public Long getSubject() {
+		return subject.getId();
 	}
 	public void setSubject(User subject) {
 		this.subject = subject;
 	}
-	public Trip getTrip() {
-		return trip;
+	public Long getTrip() {
+		return trip.getId();
 	}
 	public void setTrip(Trip trip) {
 		this.trip = trip;
 	}
-	public int getRating() {
+	public double getRating() {
 		return rating;
 	}
-	public void setRating(int rating) {
+	public void setRating(double rating) {
 		this.rating = rating;
 	}
 	public String getComment() {

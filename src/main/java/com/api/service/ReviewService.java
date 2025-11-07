@@ -2,13 +2,17 @@ package com.api.service;
 
 import java.util.List;
 
+import com.api.dto.ReviewDTO;
 import com.api.model.Review;
 
 public interface ReviewService {
 
-	Review addReviews(Review review);
+	Review addReviews(ReviewDTO review);
 	
 	List<Review> getAll();
 	
-	Review getOne(String reviewer);
+	Review getOne(long reviewerId);
+	
+	List<Review> getByTripId(int tripId);
+	
 }

@@ -23,16 +23,13 @@ public class AdminController {
 			
 	private Logger logger = LoggerFactory.getLogger(AdminController.class);
 	
-	@GetMapping("/getAll")
+	@GetMapping("/getAllUsers")
 	public ResponseEntity<List<User>> getUsers(){
-		logger.info("Fetching all users");
+		logger.info("Inside get all users method");
 		List<User> users = userService.getAllUsers();
-		logger.info("Total users found: " + users.size());
 		if(!users.isEmpty()) {
-			logger.info("Users retrieved successfully");
 			return ResponseEntity.status(HttpStatus.OK).body(users);
 		}
-		logger.warn("No users found");
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 	

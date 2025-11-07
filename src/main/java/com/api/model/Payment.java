@@ -31,20 +31,10 @@ public class Payment {
     @JsonBackReference
     @JoinColumn(name = "booking_id")
     private Booking booking;
-    @NotNull(message = "amount should be not null")
-    @NotEmpty(message = "amount should be not empty")
     private Double amount;
-    @NotNull(message = "status should be not null")
-    @NotEmpty(message = "status should be not empty")
     private String status; 
-    @NotNull(message = "method should be not null")
-    @NotEmpty(message = "method should be not empty")
     private String method; 
-    @NotNull(message = "date should be not null")
-    @NotEmpty(message = "date should be not empty")
     private LocalDate date;
-    @NotNull(message = "time should be not null")
-    @NotEmpty(message = "time should be not empty")
     private LocalTime time;
     
 	public Payment() {

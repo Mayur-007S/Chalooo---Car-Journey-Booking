@@ -8,8 +8,8 @@ import com.api.model.User;
 
 public interface UserRepository extends JpaRepository<User, Long>{
 
-//    @Query(value = "SELECT * FROM users WHERE username = :u", nativeQuery = true)
-	User findByUsername(String username);
+    @Query(value = "SELECT * FROM users WHERE username = :u", nativeQuery = true)
+	User findByUsername(@Param("u") String username);
 	
 	User findByEmail(String email);
 	

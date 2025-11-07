@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +24,7 @@ import com.api.service.BookingService;
 import com.api.service.UserService;
 
 @RestController
+@RequestMapping("api/v1/bookings")
 public class BookingController {
 
 	@Autowired
@@ -33,7 +35,8 @@ public class BookingController {
 	
 	private Logger log = LoggerFactory.getLogger(BookingController.class);
 	
-	@PostMapping("/api/v1/passenger/bookings/add")
+	@PreAuthorize("hasAnyRole('PASSENGER','ADMIN')")
+	@PostMapping("/add")
 	public ResponseEntity<Booking> addBookings(@RequestBody BookRequestDTO dto){
 		log.info("Inside add bookings method");
 		Booking book = service.addBooking(dto);
@@ -43,7 +46,8 @@ public class BookingController {
 		throw new NullPointerException("The Booking is not added because of internal severm error.");
 	}
 	
-	@GetMapping("/api/v1/pad/bookings/getall")
+	@PreAuthorize("hasAnyRole('PASSENGER','DRIVER','ADMIN')")
+	@GetMapping("/getall")
 	public ResponseEntity<List<Booking>> getAllBookings(){
 		log.info("Inside get all bookings method");
 		List<Booking> listofbookings = service.getAll();
@@ -53,7 +57,8 @@ public class BookingController {
 		throw new NotFoundException("The Booking is not added because of internal severm error.");
 	}
 	
-	@GetMapping("/api/v1/pad/bookings/getbypassengername")
+	@PreAuthorize("hasAnyRole('PASSENGER','DRIVER','ADMIN')")
+	@GetMapping("/getbypassengername")
 	public ResponseEntity<List<Booking>> getBookingByPassengerName(
 			@RequestParam(value = "name",required = true) String name
 			){

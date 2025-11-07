@@ -13,4 +13,6 @@ public interface CarService {
 	
 	Car updateCar(long cid,CarDTO car);
 	
+	void deleteCarByOwner(String username, long cid);
+	
 }

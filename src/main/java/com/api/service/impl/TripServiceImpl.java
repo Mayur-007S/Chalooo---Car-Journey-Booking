@@ -22,63 +22,55 @@ public class TripServiceImpl implements TripService {
 
 	@Autowired
 	private TripRepository repository;
-	
+
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private CarRepository carRepository;
-	
+
 	@Autowired
 	private ObjectValidator<Object> validator;
-	
+
 	private Logger log = LoggerFactory.getLogger(TripServiceImpl.class);
-	
+
 	@Override
 	public Trip addTrip(TripDTO dto) {
 		log.info("Inside add trip method");
 		Trip trip = new Trip();
-	    trip.setSource(dto.source().toLowerCase());
-	    trip.setDestination(dto.destination().toLowerCase());
-	    trip.setDateTime(dto.dateTime());
-	    trip.setTotalSeats(dto.totalSeats());
-	    trip.setAvailableSeats(dto.availableSeats());
+		trip.setSource(dto.source().toLowerCase());
+		trip.setDestination(dto.destination().toLowerCase());
+		trip.setDateTime(dto.dateTime());
+		trip.setTotalSeats(dto.totalSeats());
+		trip.setAvailableSeats(dto.availableSeats());
 
-	    User driver = userRepository.findById(dto.driver_id())
-	            .orElseThrow(() -> new NotFoundException("Driver not found"));
-	    Car car = carRepository.findById(dto.car_id())
-	            .orElseThrow(() -> new NotFoundException("Car not found"));
+		User driver = userRepository.findById(dto.driver_id())
+				.orElseThrow(() -> new NotFoundException("Driver not found"));
+		Car car = carRepository.findById(dto.car_id()).orElseThrow(() -> new NotFoundException("Car not found"));
 
-	    trip.setDriver(driver);
-	    trip.setCar(car);
-	    
-	    validator.validate(trip);
-	    
-	    return repository.save(trip);
+		trip.setDriver(driver);
+		trip.setCar(car);
+
+		validator.validate(trip);
+
+		return repository.save(trip);
 	}
 
 	@Override
 	public List<TripDTO> getALL() {
 		log.info("Inside getall trip method");
 		List<Trip> trips = repository.findAll();
-		
-		if(trips.isEmpty()) { throw new NotFoundException("No Trips Found in database. "
-				+ "Please try later."); }
-		
-		List<TripDTO> dto = trips.stream()
-		    .map(trip -> new TripDTO(
-		    	trip.getId(),
-		        trip.getSource(),
-		        trip.getDestination(),
-		        trip.getDateTime(),
-		        trip.getTotalSeats(),
-		        trip.getAvailableSeats(),
-		        trip.getCar().getId(),
-		        trip.getDriver().getId()
-		    ))
-		    .collect(Collectors.toList());
 
-		
+		if (trips.isEmpty()) {
+			throw new NotFoundException("No Trips Found in database. " + "Please try later.");
+		}
+
+		List<TripDTO> dto = trips.stream()
+				.map(trip -> new TripDTO(trip.getId(), trip.getSource(), trip.getDestination(), trip.getDateTime(),
+						trip.getTotalSeats(), trip.getAvailableSeats(), trip.getCar().getId(),
+						trip.getDriver().getId()))
+				.collect(Collectors.toList());
+
 		return dto;
 	}
 
@@ -86,22 +78,16 @@ public class TripServiceImpl implements TripService {
 	public List<TripDTO> GetBySourceAndDestination(String source, String Desti) {
 		log.info("Inside get by source and destination trip method");
 		List<Trip> trips = repository.getBySourceAndDestination(source.toLowerCase(), Desti.toLowerCase());
-		
-		if(trips.isEmpty()) { throw new NotFoundException("No Trips Found with source: "+source
-				+ " Destination: "+ Desti +" !!!"); }
-		
+
+		if (trips.isEmpty()) {
+			throw new NotFoundException("No Trips Found with source: " + source + " Destination: " + Desti + " !!!");
+		}
+
 		List<TripDTO> dto = trips.stream()
-		    .map(trip -> new TripDTO(
-		    	trip.getId(),
-		        trip.getSource(),
-		        trip.getDestination(),
-		        trip.getDateTime(),
-		        trip.getTotalSeats(),
-		        trip.getAvailableSeats(),
-		        trip.getCar().getId(),
-		        trip.getDriver().getId()
-		    ))
-		    .collect(Collectors.toList());
+				.map(trip -> new TripDTO(trip.getId(), trip.getSource(), trip.getDestination(), trip.getDateTime(),
+						trip.getTotalSeats(), trip.getAvailableSeats(), trip.getCar().getId(),
+						trip.getDriver().getId()))
+				.collect(Collectors.toList());
 
 		return dto;
 	}
@@ -113,26 +99,39 @@ public class TripServiceImpl implements TripService {
 	}
 
 	@Override
-	public Trip updateTrip(long tid,TripDTO dto) {
+	public Trip updateTrip(long tid, TripDTO dto) {
 		log.info("Inside update trip method");
 		validator.validate(dto);
 		Trip trip = repository.findById(tid)
-				.orElseThrow(() -> new NotFoundException("Trip with id: "+tid+" "+"not found exception. !!!"));
-	    trip.setSource(dto.source().toLowerCase());
-	    trip.setDestination(dto.destination().toLowerCase());
-	    trip.setDateTime(dto.dateTime());
-	    trip.setTotalSeats(dto.totalSeats());
-	    trip.setAvailableSeats(dto.availableSeats());
+				.orElseThrow(() -> new NotFoundException("Trip with id: " + tid + " " + "not found exception. !!!"));
+		trip.setSource(dto.source().toLowerCase());
+		trip.setDestination(dto.destination().toLowerCase());
+		trip.setDateTime(dto.dateTime());
+		trip.setTotalSeats(dto.totalSeats());
+		trip.setAvailableSeats(dto.availableSeats());
 
-	    User driver = userRepository.findById(dto.driver_id())
-	            .orElseThrow(() -> new NotFoundException("Driver not found"));
-	    Car car = carRepository.findById(dto.car_id())
-	            .orElseThrow(() -> new NotFoundException("Car not found"));
+		User driver = userRepository.findById(dto.driver_id())
+				.orElseThrow(() -> new NotFoundException("Driver not found"));
+		Car car = carRepository.findById(dto.car_id()).orElseThrow(() -> new NotFoundException("Car not found"));
 
-	    trip.setDriver(driver);
-	    trip.setCar(car);
+		trip.setDriver(driver);
+		trip.setCar(car);
 
-	    return repository.save(trip);
+		return repository.save(trip);
+	}
+
+	@Override
+	public List<Trip> getByDriverName(String driverName) {
+		log.info("Inside get By Driver Name Method");
+		User user = userRepository.findByUsername(driverName);
+		if (user == null) {
+			throw new NotFoundException("Driver Not Found");
+		}
+		List<Trip> listoftrips = repository.findByDriverId(user.getId());
+		if (!listoftrips.isEmpty()) {
+			return listoftrips;
+		}
+		throw new NotFoundException("Driver with name: " + driverName + ". Trips Not Found");
 	}
 
 }

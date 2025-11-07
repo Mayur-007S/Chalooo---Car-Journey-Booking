@@ -20,4 +20,6 @@ public interface TripService {
 	Trip getOneTrip(int id); 
 	
 	Trip updateTrip(long tid,TripDTO trip);
+	
+	List<Trip> getByDriverName(String driverName);
 }

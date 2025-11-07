@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -31,6 +32,7 @@ public class TripController {
 
 	private Logger log = LoggerFactory.getLogger(TripController.class);
 
+	@PreAuthorize("hasAnyRole('DRIVER','ADMIN')")
 	@PostMapping("/add")
 	public ResponseEntity<TripDTO> addTrip(@RequestBody TripDTO dto) {
 		log.info("Inside add Trip Controller");
@@ -39,11 +41,13 @@ public class TripController {
 		if (t != null) {
 			TripDTO dto1 = new TripDTO(t.getId(), t.getSource(), t.getDestination(), 
 					t.getDateTime(), t.getTotalSeats(), t.getAvailableSeats(), t.getCar().getId(), t.getDriver().getId());
-			return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+			log.info("trip object: "+dto1);
+			return ResponseEntity.status(HttpStatus.CREATED).body(dto1);
 		}
 		throw new NullPointerException("Trip Not Added Object is null. " + "Please enter information properly" + dto);
 	}
 
+	@PreAuthorize("hasAnyRole('PASSENGER','DRIVER','ADMIN')")
 	@GetMapping("/getall")
 	public ResponseEntity<List<TripDTO>> getAllTrips() {
 		log.info("Inside get all Trip Controller");
@@ -54,6 +58,7 @@ public class TripController {
 		throw new NotFoundException("No Trips found in database. | " + "please retry again after 5 minutes");
 	}
 
+	@PreAuthorize("hasAnyRole('PASSENGER','DRIVER','ADMIN')")
 	@GetMapping("/getSD")
 	public ResponseEntity<List<TripDTO>> getTripBySourceAndDestination(
 			@RequestParam(value = "source", required = true) String source,
@@ -67,7 +72,7 @@ public class TripController {
 				+ " | " + "Please enter available source and destination");
 	}
 
-	@SuppressWarnings("unused")
+	@PreAuthorize("hasAnyRole('DRIVER','ADMIN')")
 	@PutMapping("/update")
 	public ResponseEntity<TripDTO> updateTrip(@RequestParam(value = "tid", required = true) long tid,
 			@RequestBody TripDTO dto) {
@@ -81,5 +86,16 @@ public class TripController {
 			return ResponseEntity.status(HttpStatus.OK).body(responsedto);
 		}
 		throw new NullPointerException("Trip Not Added Object is null. " + "Please enter information properly" + trip);
+	}
+	
+	@PreAuthorize("hasAnyRole('DRIVER','ADMIN')")
+	@GetMapping("/getByDriverName")
+	public ResponseEntity<List<Trip>> getByDriverName(@RequestParam(value="drivername",required = true) String drivername){
+		log.info("Inside Get By Drivername Controller");
+		List<Trip> listoftrips = service.getByDriverName(drivername);
+		if(listoftrips.isEmpty()) {
+			return ResponseEntity.ok(listoftrips);
+		}
+		throw new NotFoundException("Driver with name: "+drivername+". Not Found Trips. !!!");
 	}
 }

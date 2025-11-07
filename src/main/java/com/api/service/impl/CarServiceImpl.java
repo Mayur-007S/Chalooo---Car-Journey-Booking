@@ -81,4 +81,20 @@ public class CarServiceImpl implements CarService {
 		
 		return repository.save(car1);
 	}
+
+	@Override
+	public void deleteCarByOwner(String username,long cid) 
+	{
+		log.info("Inside delete car method");
+		User user = userService.UserByUsername(username);
+		if(user == null) { throw new NotFoundException("No user found with owner name: "+username);}
+		
+		Optional<Car> car = repository.findById(cid);
+		if(car.isPresent()) {
+			repository.deleteByOwnerId(cid, user.getId());
+		}else {
+			throw new NotFoundException("Car with id: "+cid+" not found. !!!");
+		}
+	
+	}
 }
