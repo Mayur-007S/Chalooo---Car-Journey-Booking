@@ -6,13 +6,13 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
 import com.api.customeexceptions.ObjectNotValidateException;
-
+import com.api.model.User;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import jakarta.validation.constraints.Email;
 
 @Component
 public class ObjectValidator<T> {
@@ -36,6 +36,5 @@ public class ObjectValidator<T> {
 			throw new ObjectNotValidateException(errorMessage);
 		}
 	}
-	
-	
+
 }

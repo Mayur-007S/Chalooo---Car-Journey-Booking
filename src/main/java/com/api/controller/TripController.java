@@ -1,10 +1,10 @@
 package com.api.controller;
 
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,13 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.api.customeexceptions.NotFoundException;
 import com.api.dto.TripDTO;
-import com.api.model.Trip;
 import com.api.service.TripService;
-
-import jakarta.validation.constraints.Positive;
 
 @RestController
 @RequestMapping("/api/v1/trip")
@@ -36,13 +32,11 @@ public class TripController {
 	@PostMapping("/add")
 	public ResponseEntity<TripDTO> addTrip(@RequestBody TripDTO dto) {
 		log.info("Inside add Trip Controller");
-		Trip t = service.addTrip(dto);
-		
-		if (t != null) {
-			TripDTO dto1 = new TripDTO(t.getId(), t.getSource(), t.getDestination(), 
-					t.getDateTime(), t.getTotalSeats(), t.getAvailableSeats(), t.getCar().getId(), t.getDriver().getId());
-			log.info("trip object: "+dto1);
-			return ResponseEntity.status(HttpStatus.CREATED).body(dto1);
+		System.out.println("Trip: " + dto);
+		TripDTO dto2 = service.addTrip(dto);
+		System.out.println("Trip: " + dto2);
+		if (dto2 != null) {
+			return ResponseEntity.status(HttpStatus.CREATED).body(dto2);
 		}
 		throw new NullPointerException("Trip Not Added Object is null. " + "Please enter information properly" + dto);
 	}
@@ -72,30 +66,43 @@ public class TripController {
 				+ " | " + "Please enter available source and destination");
 	}
 
+	@PreAuthorize("hasAnyRole('PASSENGER','DRIVER','ADMIN')")
+	@GetMapping("/sourceAndDestDate")
+	public ResponseEntity<List<TripDTO>> getBySourceAndDestOrDate(@RequestParam(required = false) String source,
+			@RequestParam(required = false) String dest,
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) String date) {
+		log.info("Inside get by source and dest or date controller");
+		List<TripDTO> trips1 = service.GetBySourceAndDestOrDate(source, dest, date);
+		if (trips1.isEmpty()) {
+			throw new NotFoundException("Not Found Trip");
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(trips1);
+
+	}
+
 	@PreAuthorize("hasAnyRole('DRIVER','ADMIN')")
 	@PutMapping("/update")
 	public ResponseEntity<TripDTO> updateTrip(@RequestParam(value = "tid", required = true) long tid,
 			@RequestBody TripDTO dto) {
 		log.info("Inside add Trip Controller");
-		
-		Trip trip = service.updateTrip(tid, dto);
-		TripDTO responsedto = new TripDTO(trip.getId(), trip.getSource(), trip.getDestination(), trip.getDateTime(),
-				trip.getTotalSeats(), trip.getAvailableSeats(), trip.getCar().getId(), trip.getDriver().getId());
-		
-		if (trip != null) {
-			return ResponseEntity.status(HttpStatus.OK).body(responsedto);
+		log.info("Trip DTO", dto);
+		TripDTO dto2 = service.updateTrip(tid, dto);
+
+		if (dto2 != null) {
+			return ResponseEntity.status(HttpStatus.OK).body(dto2);
 		}
-		throw new NullPointerException("Trip Not Added Object is null. " + "Please enter information properly" + trip);
+		throw new NullPointerException("Trip Not Added Object is null. " + "Please enter information properly" + dto2);
 	}
-	
+
 	@PreAuthorize("hasAnyRole('DRIVER','ADMIN')")
 	@GetMapping("/getByDriverName")
-	public ResponseEntity<List<Trip>> getByDriverName(@RequestParam(value="drivername",required = true) String drivername){
+	public ResponseEntity<List<TripDTO>> getByDriverName(
+			@RequestParam(value = "drivername", required = true) String drivername) {
 		log.info("Inside Get By Drivername Controller");
-		List<Trip> listoftrips = service.getByDriverName(drivername);
-		if(listoftrips.isEmpty()) {
+		List<TripDTO> listoftrips = service.getByDriverName(drivername);
+		if (!listoftrips.isEmpty()) {
 			return ResponseEntity.ok(listoftrips);
 		}
-		throw new NotFoundException("Driver with name: "+drivername+". Not Found Trips. !!!");
+		throw new NotFoundException("Driver with name: " + drivername + ". Not Found Trips. !!!");
 	}
 }

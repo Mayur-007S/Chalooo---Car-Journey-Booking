@@ -38,16 +38,18 @@ public class Payment {
     private LocalTime time;
     
 	public Payment() {
+		this.date = LocalDate.now();
+		this.time = LocalTime.now().withNano(0);
 	}
 
-	public Payment(Long id, Booking booking, 
+	public Payment(Booking booking, 
 			Double amount, String status, String method) {
-		super();
-		this.id = id;
 		this.booking = booking;
 		this.amount = amount;
 		this.status = status;
 		this.method = method;
+		this.date = LocalDate.now();
+		this.time = LocalTime.now();
 	}
 
 	public Long getId() {

@@ -7,11 +7,13 @@ import com.api.model.Payment;
 
 public interface PaymentService {
 
-	Payment addPayment(PaymentDTO paymentdto);
+	PaymentDTO addPayment(PaymentDTO paymentdto);
 
-	Payment getOne(int payment_id);
+	PaymentDTO getOne(int payment_id);
 	
-	List<Payment> getByBookingId(long booking_id);
+	List<PaymentDTO> getByBookingId(long booking_id);
 	
-	List<Payment> getByTripId(int trip_id);
+	List<PaymentDTO> getByTripId(int trip_id);
+	
+	List<PaymentDTO> getPaymentForDriver(int driver_id);
 }

@@ -1,6 +1,7 @@
 package com.api.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.api.model.User;
 
@@ -19,4 +20,6 @@ public interface UserService {
 	public String verifyUser(User user);
 	
 	public User getOneUser(int uid);
+	
+	public Optional<User> getOneUser(Long uid);
 }

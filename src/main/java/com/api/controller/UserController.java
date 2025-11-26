@@ -1,5 +1,6 @@
 package com.api.controller;
 
+import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import com.api.model.User;
 import com.api.service.UserService;
 
 import jakarta.mail.MessagingException;
+import jakarta.validation.constraints.Email;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,18 +33,17 @@ public class UserController {
     private Logger logger = LoggerFactory.getLogger(UserController.class);
     
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
-
+    
     @PostMapping("/register")
     public ResponseEntity<User> register(@RequestBody User user) throws MessagingException, IOException {
     	logger.info("Inside register method of UserController");
     	user.setPassword(encoder.encode(user.getPassword()));
-    	logger.info("Call Add User Method");
+    	
     	User user1 = userService.addUser(user);
     	if(user1 != null) {
     		mailService.sendEmail(user.getEmail(), "SignIn Successfully.!!!", user.getUsername());
     		return ResponseEntity.status(HttpStatus.CREATED).body(user1);
     	}
-    	logger.info("Exit from register method of UserController");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
     

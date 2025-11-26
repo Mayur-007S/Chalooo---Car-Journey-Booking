@@ -31,7 +31,8 @@ public class Trip implements Serializable{
     private Long id;
     private String source;
     private String destination;
-    private LocalDateTime dateTime;
+    private LocalDateTime startDateTime;
+    private LocalDateTime departureDateTime;
     private int totalSeats;
     private int availableSeats;
 
@@ -48,24 +49,8 @@ public class Trip implements Serializable{
     private List<Booking> bookings;
 
 	public Trip() {
-		super();
-		// TODO Auto-generated constructor stub
 	}
-
-	public Trip(Long id, String source, String destination, LocalDateTime dateTime, int totalSeats, int availableSeats,
-			User driver, Car car, List<Booking> bookings) {
-		super();
-		this.id = id;
-		this.source = source;
-		this.destination = destination;
-		this.dateTime = dateTime;
-		this.totalSeats = totalSeats;
-		this.availableSeats = availableSeats;
-		this.driver = driver;
-		this.car = car;
-		this.bookings = bookings;
-	}
-
+	
 	public Long getId() {
 		return id;
 	}
@@ -90,12 +75,20 @@ public class Trip implements Serializable{
 		this.destination = destination;
 	}
 
-	public LocalDateTime getDateTime() {
-		return dateTime;
+	public LocalDateTime getStartDateTime() {
+		return startDateTime;
 	}
 
-	public void setDateTime(LocalDateTime dateTime) {
-		this.dateTime = dateTime;
+	public void setStartDateTime(LocalDateTime startDateTime) {
+		this.startDateTime = startDateTime;
+	}
+
+	public LocalDateTime getDepartureDateTime() {
+		return departureDateTime;
+	}
+
+	public void setDepartureDateTime(LocalDateTime departureDateTime) {
+		this.departureDateTime = departureDateTime;
 	}
 
 	public int getTotalSeats() {
@@ -137,6 +130,6 @@ public class Trip implements Serializable{
 	public void setBookings(List<Booking> bookings) {
 		this.bookings = bookings;
 	}
-    
-    
+
+	
 }

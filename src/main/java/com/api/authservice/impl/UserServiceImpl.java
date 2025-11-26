@@ -1,6 +1,7 @@
 package com.api.authservice.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,6 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<User> getAllUsers() {
 		logger.info("Inside getAllUsers method of UserServiceImpl");
-		logger.info("Exit from getAllUsers method of UserServiceImpl");
 		return userRepository.findAll();
 	}
 
@@ -86,4 +86,9 @@ public class UserServiceImpl implements UserService {
 		return userRepository.findById(uid);
 	}
 
+	@Override
+	public Optional<User> getOneUser(Long uid) {
+		logger.info("Inside UserById method of UserServiceImpl");
+		return userRepository.findById(uid);
+	}
 }

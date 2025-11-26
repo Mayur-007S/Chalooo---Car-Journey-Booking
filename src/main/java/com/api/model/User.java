@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,7 @@ public class User {
     @NotNull(message = "Email should be not null")
     @NotEmpty(message = "Email should be not empty")
     @Column(unique=true)
+    @Email(message = "Invalide Email Please Enter Valid Email. [ Admin@gmail.com ]")
     private String email;
     @NotNull(message = "Password should be not null")
     @NotEmpty(message = "Password should be not empty")
@@ -55,10 +57,7 @@ public class User {
     @OneToMany(mappedBy = "passenger")
     private List<Booking> bookings; // If PASSENGER
 
-	public User() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+	public User() {}
 	
 	public User(Long id, String email, String password, 
 			String username, String phone, String role) {

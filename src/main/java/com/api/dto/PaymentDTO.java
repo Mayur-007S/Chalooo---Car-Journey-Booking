@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotNull;
 
 public record PaymentDTO( 
 		 @NotNull(message = "source should be not null")
-		 int booking_id,
+		 long booking_id,
 		 @NotNull(message = "source should be not null")
 	     Double amount,
 	     @NotNull(message = "source should be not null")

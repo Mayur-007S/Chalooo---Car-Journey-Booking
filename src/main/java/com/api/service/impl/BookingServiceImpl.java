@@ -1,5 +1,7 @@
 package com.api.service.impl;
 
+import java.awt.print.Book;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,12 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.api.customeexceptions.NotFoundException;
-import com.api.dto.BookRequestDTO;
+import com.api.dto.BookDTO;
+import com.api.dto.TripDTO;
+import com.api.dto.mapper.TripMapper;
 import com.api.model.Booking;
 import com.api.model.Payment;
 import com.api.model.Trip;
 import com.api.model.User;
 import com.api.repository.BookingRepository;
+import com.api.repository.TripRepository;
 import com.api.repository.UserRepository;
 import com.api.service.BookingService;
 import com.api.service.TripService;
@@ -39,39 +44,46 @@ public class BookingServiceImpl implements BookingService {
 	private UserService userService;
 
 	@Autowired
-	private TripService tripService;
+	private TripRepository tripRepository;
+
+	@Autowired
+	private TripMapper mapper;
 
 	@Override
-	public Booking addBooking(BookRequestDTO dto) {
+	public Booking addBooking(BookDTO dto) {
 		log.info("Inside add booking method");
 		validator.validate(dto);
+
+		// ✅ Fix: Fetch trip directly from repository instead of mapping from DTO
+		Trip trip = tripRepository.findById(dto.trip_id())
+				.orElseThrow(() -> new NotFoundException("Trip not found for id: " + dto.trip_id()));
+
+		if (trip.getAvailableSeats() < dto.seatsBooked()) {
+			throw new NotFoundException("Not enough seats available");
+		}
+
+		if (trip.getDepartureDateTime().isBefore(LocalDateTime.now())) {
+			throw new NotFoundException("Cannot book past trips");
+		}
+
+		User user = userService.getOneUser(dto.passenger_id());
+		if (user == null) {
+			throw new NotFoundException("User not found with passenger id: " + dto.passenger_id());
+		}
+
 		Booking book = new Booking();
+		book.setTrip(trip);
 		book.setSeatsBooked(dto.seatsBooked());
 		book.setDate(dto.date());
 		book.setTime(dto.time());
 		book.setStatus(dto.status().toUpperCase());
-		
-		log.info("trip_id: "+dto.trip_id());
-		log.info("passenger_id: "+dto.passenger_id());
-		
-		User user = userService.getOneUser(dto.passenger_id());
-		if(user != null) {
-			log.info(""+user);
-			book.setPassenger(user);
-		}
-		else { throw new NotFoundException("User not found with passenger id: "+dto.passenger_id()
-		+" Please enter available.");}
-		
-		Trip trip = tripService.getOneTrip(dto.trip_id());
-		if(trip != null) {
-			log.info(""+trip);
-			book.setTrip(trip);
-		}
-		else { throw new NotFoundException("User not found with passenger id: "
-		+dto.trip_id()+ " " +"Please enter available.");}		
+		book.setPassenger(user);
 
-	return repository.save(book);
+		trip.setAvailableSeats(trip.getAvailableSeats() - dto.seatsBooked());
+		
+		tripRepository.save(trip);
 
+		return repository.save(book);
 	}
 
 	@Override
@@ -90,6 +102,18 @@ public class BookingServiceImpl implements BookingService {
 	public Optional<Booking> getOne(long pid) {
 		// TODO Auto-generated method stub
 		return repository.findById(pid);
+	}
+
+	@Override
+	public boolean cancelBooking(long book_id) {
+		log.info("Inside cancel booking method");
+		Booking book = repository.findById(book_id).get();
+		if(book != null) {
+			book.setStatus("CANCEL");
+			repository.save(book);
+			return true;
+		}
+		return false;
 	}
 
 }

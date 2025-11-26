@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,10 +31,10 @@ public class PaymentController {
 	
 	@PreAuthorize("hasAnyRole('PASSENGER','ADMIN')")
 	@PostMapping("/add")
-	public ResponseEntity<Payment> addPayment(@RequestBody PaymentDTO paymentDTO)
+	public ResponseEntity<PaymentDTO> addPayment(@RequestBody PaymentDTO paymentDTO)
 	{
 		log.info("Adding new payment with details: {}", paymentDTO);
-		Payment payment = paymentService.addPayment(paymentDTO);
+		PaymentDTO payment = paymentService.addPayment(paymentDTO);
 		if(payment != null) {
 			return ResponseEntity.ok(payment);
 		}
@@ -42,11 +43,11 @@ public class PaymentController {
 	
 	@PreAuthorize("hasAnyRole('PASSENGER','DRIVER','ADMIN')")
     @GetMapping("/byTripId")
-	public ResponseEntity<List<Payment>> getByTripId(
+	public ResponseEntity<List<PaymentDTO>> getByTripId(
 			@RequestParam(value = "tripid", required = true) int tripid)
     {
 		log.info("Fetching payment details for tripId: {}", tripid);
-		List<Payment> payment = paymentService.getByTripId(tripid);
+		List<PaymentDTO> payment = paymentService.getByTripId(tripid);
 		if (payment != null) {
 			return ResponseEntity.ok(payment);
 		}
@@ -56,15 +57,27 @@ public class PaymentController {
     
 	@PreAuthorize("hasAnyRole('PASSENGER','DRIVER','ADMIN')")
     @GetMapping("/byBookId")
-	public ResponseEntity<List<Payment>> getByBookId(
+	public ResponseEntity<List<PaymentDTO>> getByBookId(
 			@RequestParam(value = "bookid", required = true) long bookid)
     {
 		log.info("Fetching payment details for BookId: {}", bookid);
-		List<Payment> payment = paymentService.getByBookingId(bookid);
+		List<PaymentDTO> payment = paymentService.getByBookingId(bookid);
 		if (payment != null) {
 			return ResponseEntity.ok(payment);
 		}
 		
 		throw new NotFoundException("No payment found for the given book ID.");
+	}
+	
+	@PreAuthorize("hasAnyRole('DRIVER','ADMIN')")
+	@GetMapping("/byDriver")
+	public ResponseEntity<List<PaymentDTO>> getByDriver(@RequestParam int driverId){
+		log.info("Inside get By Driver controller");
+		List<PaymentDTO> payment = paymentService.getPaymentForDriver(driverId);
+		
+		if(!payment.isEmpty()) {
+			ResponseEntity.status(HttpStatus.OK).body(payment);
+		}
+		throw new NotFoundException("Not found Payment for driver:");
 	}
 }

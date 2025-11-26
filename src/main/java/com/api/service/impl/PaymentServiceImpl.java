@@ -1,19 +1,15 @@
 package com.api.service.impl;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.api.customeexceptions.NotFoundException;
 import com.api.dto.PaymentDTO;
-import com.api.model.Booking;
+import com.api.dto.mapper.PaymentMapper;
 import com.api.model.Payment;
 import com.api.repository.PaymentRepository;
-import com.api.service.BookingService;
 import com.api.service.PaymentService;
 import com.api.validation.ObjectValidator;
 
@@ -25,46 +21,48 @@ public class PaymentServiceImpl implements PaymentService {
 	private PaymentRepository repository;
 	@Autowired
 	private ObjectValidator<PaymentDTO> validator;
-	
+
 	@Autowired
-	private BookingService bookingService;
-	 
+	private PaymentMapper paymentMapper;
+
 	@Override
-	public Payment addPayment(PaymentDTO paymentdto) {
-		// TODO Auto-generated method stub
+	public PaymentDTO addPayment(PaymentDTO paymentdto) {
 		log.info("Inside add Payment method");
 		validator.validate(paymentdto);
-		Payment payment = new Payment();
-		
-		Optional<Booking> book = bookingService.getOne(paymentdto.booking_id()); 
-		if(book.isPresent()) {payment.setBooking(book.get());}
-		else {throw new NotFoundException("booking is not for the payment"); }
-		
-		payment.setAmount(paymentdto.amount());
-		payment.setStatus(paymentdto.status());
-		payment.setMethod(paymentdto.method());
-		payment.setDate(paymentdto.date());
-		payment.setTime(paymentdto.time());
-		
-		return repository.save(payment);
+		var payment = paymentMapper.DTOtoEntity(paymentdto);
+		var payment2 = repository.save(payment);
+		return paymentMapper.EntitytoDTO(payment2);
 	}
 
 	@Override
-	public Payment getOne(int payment_id) {
-		// TODO Auto-generated method stub
-		return repository.findById(payment_id);
+	public PaymentDTO getOne(int payment_id) {
+		log.info("Inside getOne booking method");
+		var payment = repository.findById(payment_id);
+		return paymentMapper.EntitytoDTO(payment);
 	}
 
 	@Override
-	public List<Payment> getByBookingId(long booking_id) {
-		// TODO Auto-generated method stub
-		return repository.findByBookingId(booking_id);
+	public List<PaymentDTO> getByBookingId(long booking_id) {
+		log.info("Inside getByBookingId booking method");
+		List<Payment> payment = repository.findByBookingId(booking_id);
+		return paymentMapper.EntitytoDTO(payment);
 	}
 
 	@Override
-	public List<Payment> getByTripId(int trip_id) {
-		// TODO Auto-generated method stub
-		return repository.findByTripId(trip_id);
+	public List<PaymentDTO> getByTripId(int trip_id) {
+		log.info("Inside getByTripId booking method");
+		List<Payment> payment = repository.findByTripId(trip_id);
+		return paymentMapper.EntitytoDTO(payment);
+	}
+
+	@Override
+	public List<PaymentDTO> getPaymentForDriver(int driver_id) {
+		log.info("Inside getPaymentForDriver booking method");
+		List<Payment> payment = repository.findPaymentForDriver(driver_id);
+		if(payment.isEmpty()) {
+			log.info("Not found payment");
+		}
+		return paymentMapper.EntitytoDTO(payment);
 	}
 
 }

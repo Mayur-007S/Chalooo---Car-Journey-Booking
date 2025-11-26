@@ -1,4 +1,3 @@
-
 package com.api.controller;
 
 import java.util.List;
@@ -77,5 +76,4 @@ public class CarController {
 		return ResponseEntity.status(HttpStatus.OK)
 				.body("Car with id: " + cid + " has deleted successfully.");
 	}
-
 }

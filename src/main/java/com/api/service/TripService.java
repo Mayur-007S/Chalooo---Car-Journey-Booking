@@ -9,17 +9,18 @@ import com.api.model.Trip;
 
 public interface TripService {
 
-	Trip addTrip(TripDTO trip);
+	TripDTO addTrip(TripDTO trip);
 	
 	List<TripDTO> getALL();
 
-	@Query(value = "SELECT * FROM chaloo_db.trips"
-			+ " WHERE source = :s and destination = :d", nativeQuery = true)
-	List<TripDTO> GetBySourceAndDestination(@Param("s") String source, @Param("d") String Desti);
+	List<TripDTO> GetBySourceAndDestination(String source, String Desti);
+
+	List<TripDTO> GetBySourceAndDestOrDate(String source, String dest, String date);
 	
-	Trip getOneTrip(int id); 
+	TripDTO getOneTrip(int id); 
 	
-	Trip updateTrip(long tid,TripDTO trip);
+	TripDTO updateTrip(long tid,TripDTO trip);
 	
-	List<Trip> getByDriverName(String driverName);
+	List<TripDTO> getByDriverName(String driverName);
+		
 }

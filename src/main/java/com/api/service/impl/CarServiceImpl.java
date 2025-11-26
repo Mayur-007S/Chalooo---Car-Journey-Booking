@@ -97,4 +97,10 @@ public class CarServiceImpl implements CarService {
 		}
 	
 	}
+
+	@Override
+	public Optional<Car> getOneCar(Long cid) {
+		log.info("Inside get one car method");
+		return repository.findById(cid);
+	}
 }

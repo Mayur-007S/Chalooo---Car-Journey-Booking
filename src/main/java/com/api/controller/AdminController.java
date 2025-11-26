@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +25,7 @@ public class AdminController {
 			
 	private Logger logger = LoggerFactory.getLogger(AdminController.class);
 	
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@GetMapping("/getAllUsers")
 	public ResponseEntity<List<User>> getUsers(){
 		logger.info("Inside get all users method");
@@ -30,7 +33,7 @@ public class AdminController {
 		if(!users.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.OK).body(users);
 		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		throw new UsernameNotFoundException("No users found in database.");
 	}
 	
 }

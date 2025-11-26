@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.api.customeexceptions.NotFoundException;
-import com.api.dto.BookRequestDTO;
+import com.api.dto.BookDTO;
 import com.api.model.Booking;
 import com.api.model.User;
 import com.api.service.BookingService;
@@ -37,7 +38,7 @@ public class BookingController {
 	
 	@PreAuthorize("hasAnyRole('PASSENGER','ADMIN')")
 	@PostMapping("/add")
-	public ResponseEntity<Booking> addBookings(@RequestBody BookRequestDTO dto){
+	public ResponseEntity<Booking> addBookings(@RequestBody BookDTO dto){
 		log.info("Inside add bookings method");
 		Booking book = service.addBooking(dto);
 		if(book != null) {
@@ -46,7 +47,7 @@ public class BookingController {
 		throw new NullPointerException("The Booking is not added because of internal severm error.");
 	}
 	
-	@PreAuthorize("hasAnyRole('PASSENGER','DRIVER','ADMIN')")
+	@PreAuthorize("hasAnyRole('DRIVER','ADMIN')")
 	@GetMapping("/getall")
 	public ResponseEntity<List<Booking>> getAllBookings(){
 		log.info("Inside get all bookings method");
@@ -78,4 +79,15 @@ public class BookingController {
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(listofbooking);
 	}
+	
+	@PreAuthorize("hasAnyRole('PASSENGER','ADMIN')")
+	@PostMapping("/cancel")
+	public ResponseEntity<String> cancelBooking(@RequestParam long bookid){
+		log.info("Inside cancel booking controller");
+		if(service.cancelBooking(bookid)) {
+			return ResponseEntity.status(HttpStatus.OK).body("Booking is cancel successfully. Refund will be get in 24 hours.");
+		}
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Booking is not cancel due to some issue. Please try again");
+	}
+	
 }
