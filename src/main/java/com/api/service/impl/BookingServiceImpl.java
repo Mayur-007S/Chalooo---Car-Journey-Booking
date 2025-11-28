@@ -116,4 +116,10 @@ public class BookingServiceImpl implements BookingService {
 		return false;
 	}
 
+	@Override
+	public List<Booking> getByTripId(long tripId) {
+		log.info("Inside getByTripId method");
+		return repository.findByTrip(tripId);
+	}
+
 }

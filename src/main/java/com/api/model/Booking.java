@@ -2,16 +2,20 @@ package com.api.model;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
@@ -39,17 +43,19 @@ public class Booking {
     private String status; // REQUESTED, CONFIRMED, CANCELLED
 
     @JsonManagedReference
-    @OneToOne(mappedBy = "booking")
-    private Payment payment;
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Payment> payment;
 
 	public Booking() {}
 
-	public Booking(Long id, Trip trip, User passenger, int seatsBooked, 
-			String status, Payment payment) {
+	public Booking(Long id, Trip trip, User passenger, int seatsBooked, LocalDate date, LocalTime time, String status,
+			List<Payment> payment) {
 		this.id = id;
 		this.trip = trip;
 		this.passenger = passenger;
 		this.seatsBooked = seatsBooked;
+		this.date = date;
+		this.time = time;
 		this.status = status;
 		this.payment = payment;
 	}
@@ -94,11 +100,11 @@ public class Booking {
 		this.status = status;
 	}
 
-	public Payment getPayment() {
+	public List<Payment> getPayment() {
 		return payment;
 	}
 
-	public void setPayment(Payment payment) {
+	public void setPayment(List<Payment> payment) {
 		this.payment = payment;
 	}
 

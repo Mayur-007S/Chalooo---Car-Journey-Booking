@@ -29,4 +29,5 @@ public interface TripRepository extends JpaRepository<Trip, Long>, JpaSpecificat
 			@Param("dest") String dest,
 			@Param("date") String date
 				);
+	
 }

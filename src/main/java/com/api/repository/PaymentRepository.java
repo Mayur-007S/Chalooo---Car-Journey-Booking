@@ -20,9 +20,9 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 			+ "where p.id = b.booking_id and p.trip_id= :tripid", nativeQuery = true)
 	List<Payment> findByTripId(@Param("tripid") long trip_id);
 
-	@Query(value = "SELECT p.* FROM payments as p "
-			+ "join bookings as b on p.booking_id = b.id "
-			+ "join trips as t on b.trip_id = t.id "
-			+ "where t.driver_id =:driverid", nativeQuery = true)
-	List<Payment> findPaymentForDriver(@Param("driverid") int driverid);
+	@Query("SELECT p FROM Payment p " +
+		       "JOIN p.booking b " +
+		       "JOIN b.trip t " +
+		       "WHERE t.driver.id = :driverId")
+	List<Payment> findPaymentForDriver(@Param("driverId") long driverId);
 }

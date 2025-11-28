@@ -7,7 +7,10 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpServerErrorException.InternalServerError;
+
 import com.api.customeexceptions.NotFoundException;
 import com.api.dto.TripDTO;
 import com.api.dto.mapper.TripMapper;
@@ -17,6 +20,7 @@ import com.api.model.User;
 import com.api.repository.CarRepository;
 import com.api.repository.TripRepository;
 import com.api.repository.UserRepository;
+import com.api.service.BookingService;
 import com.api.service.TripService;
 import com.api.validation.ObjectValidator;
 
@@ -28,6 +32,9 @@ public class TripServiceImpl implements TripService {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private BookingService bookingService;
 
 	@Autowired
 	private TripMapper mapper;
@@ -116,6 +123,29 @@ public class TripServiceImpl implements TripService {
 
 		List<Trip> trips = tripRepository.getBySourceAndDestinationOrDate(source, dest, date);
 		return trips.stream().map(mapper::tripToTripDto).toList();
+	}
+
+	@Override
+	public boolean CancelTrip(long tripId) {
+		log.info("Inside CancelTrip method");
+
+		var bookings = bookingService.getByTripId(tripId);
+		log.info("" + bookings);
+
+		if (bookings.isEmpty()) {
+			try {
+				tripRepository.deleteById(tripId);
+				log.info("Trip deleted successfully");
+				return true;
+
+			} catch (DataIntegrityViolationException e) {
+				log.error("Cannot delete trip due to foreign key constraints", e);
+				return false;
+			}
+		}
+		
+		log.warn("Cannot cancel trip. Bookings exist for tripId: " + tripId);
+		return false;
 	}
 
 }

@@ -105,4 +105,19 @@ public class TripController {
 		}
 		throw new NotFoundException("Driver with name: " + drivername + ". Not Found Trips. !!!");
 	}
+	
+	@PreAuthorize("hasAnyRole('DRIVER','ADMIN')")
+	@PostMapping("/cancelTrip")
+	public ResponseEntity<String> cancelTrips(@RequestParam long tripid){
+		log.info("Inside Cancel Trip Controller");
+		if(service.CancelTrip(tripid)) {
+			return ResponseEntity.status(HttpStatus.OK).body("Cancel Trips Successfully.!!!");
+		}else {
+			return ResponseEntity
+					.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Trips Can't be cancel because internal server error.!!!");
+		}
+	}
+	
+	
 }

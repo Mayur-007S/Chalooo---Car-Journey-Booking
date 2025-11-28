@@ -15,5 +15,7 @@ public interface PaymentService {
 	
 	List<PaymentDTO> getByTripId(int trip_id);
 	
-	List<PaymentDTO> getPaymentForDriver(int driver_id);
+	List<PaymentDTO> getPaymentForDriver(long driver_id);
+	
+	List<PaymentDTO> getAllPayment();
 }

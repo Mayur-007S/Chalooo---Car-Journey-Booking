@@ -56,13 +56,17 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 
 	@Override
-	public List<PaymentDTO> getPaymentForDriver(int driver_id) {
+	public List<PaymentDTO> getPaymentForDriver(long driver_id) {
 		log.info("Inside getPaymentForDriver booking method");
 		List<Payment> payment = repository.findPaymentForDriver(driver_id);
-		if(payment.isEmpty()) {
-			log.info("Not found payment");
-		}
 		return paymentMapper.EntitytoDTO(payment);
+	}
+
+	@Override
+	public List<PaymentDTO> getAllPayment() {
+		log.info("Inside get all Payment Method");
+		List<Payment> payments = repository.findAll();
+		return paymentMapper.EntitytoDTO(payments);
 	}
 
 }

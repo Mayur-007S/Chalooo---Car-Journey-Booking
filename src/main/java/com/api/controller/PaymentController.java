@@ -38,8 +38,20 @@ public class PaymentController {
 		if(payment != null) {
 			return ResponseEntity.ok(payment);
 		}
-		throw new NullPointerException("Failed to add payment with the provided details.");
+		throw new NotFoundException("Failed to add payment with the provided details.");
 	}
+	
+	@PreAuthorize("hasAnyRole('ADMIN')")
+	@GetMapping("/getAll")
+	public ResponseEntity<List<PaymentDTO>> getAllPayments(){
+		log.info("Inside get all payment controller.");
+		List<PaymentDTO> paydto = paymentService.getAllPayment();
+		if(paydto != null) {
+			return ResponseEntity.status(HttpStatus.OK).body(paydto);
+		}
+		throw new NotFoundException("No payment found for the given trip ID.");
+	}
+	
 	
 	@PreAuthorize("hasAnyRole('PASSENGER','DRIVER','ADMIN')")
     @GetMapping("/byTripId")
@@ -71,13 +83,13 @@ public class PaymentController {
 	
 	@PreAuthorize("hasAnyRole('DRIVER','ADMIN')")
 	@GetMapping("/byDriver")
-	public ResponseEntity<List<PaymentDTO>> getByDriver(@RequestParam int driverId){
+	public ResponseEntity<List<PaymentDTO>> getByDriver(@RequestParam long driverId){
 		log.info("Inside get By Driver controller");
 		List<PaymentDTO> payment = paymentService.getPaymentForDriver(driverId);
-		
-		if(!payment.isEmpty()) {
-			ResponseEntity.status(HttpStatus.OK).body(payment);
+		log.info("Payment Object: "+payment);
+		if(payment.isEmpty()) {
+			throw new NotFoundException("Not found Payment for driver:");
 		}
-		throw new NotFoundException("Not found Payment for driver:");
+		return ResponseEntity.status(HttpStatus.OK).body(payment);
 	}
 }

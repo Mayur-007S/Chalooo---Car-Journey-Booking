@@ -88,7 +88,7 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Override
 	public List<Review> getByTripId(int tripId) {
-		// TODO Auto-generated method stub
+		log.info("Inside getByTripId review method");
 		return repository.findByTripId(tripId);
 	}
 

@@ -17,4 +17,6 @@ public interface BookingService {
 	List<Booking> getBookingByPassengerName(long id);
 	
 	boolean cancelBooking(long book_id);
+	
+	List<Booking> getByTripId(long tripId);
 }

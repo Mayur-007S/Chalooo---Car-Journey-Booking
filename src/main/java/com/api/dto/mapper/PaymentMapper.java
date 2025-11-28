@@ -44,7 +44,7 @@ public class PaymentMapper {
 	}
 	
 	public PaymentDTO EntitytoDTO(Payment payment) {
-		log.info("Inside Payment mapper class: EntitytoDTO method");
+		log.info("Inside Payment mapper class EntitytoDTO method");
 		PaymentDTO paymentdto = new PaymentDTO(
 				 payment.getBooking().getId(),
 			     payment.getAmount(),
@@ -57,8 +57,10 @@ public class PaymentMapper {
 	}
 	
 	public List<PaymentDTO> EntitytoDTO(List<Payment> payment) {
-		log.info("Inside Payment mapper class: EntitytoDTO method");
-
+		log.info("Inside Payment mapper class List EntitytoDTO method");
+		if(payment.isEmpty()) {
+			log.info("No payment found ");
+		}
 		List<PaymentDTO> paymentdtos = payment.stream()
 			.map(pay -> new PaymentDTO
 					(pay.getBooking().getId(), 

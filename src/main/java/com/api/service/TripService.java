@@ -23,4 +23,5 @@ public interface TripService {
 	
 	List<TripDTO> getByDriverName(String driverName);
 		
+	boolean CancelTrip(long id);
 }
