@@ -51,6 +51,18 @@ public class Trip implements Serializable{
 	public Trip() {
 	}
 	
+	public Trip(String source, String destination, LocalDateTime startDateTime,
+			LocalDateTime departureDateTime, int totalSeats, int availableSeats) {
+		this.source = source;
+		this.destination = destination;
+		this.startDateTime = startDateTime;
+		this.departureDateTime = departureDateTime;
+		this.totalSeats = totalSeats;
+		this.availableSeats = availableSeats;
+	}
+
+
+
 	public Long getId() {
 		return id;
 	}

@@ -12,5 +12,6 @@ public record BookDTO(
 		@NotNull(message = "source should be not null")  int seatsBooked,
 		@NotNull(message = "source should be not null")  LocalDate date,
 		@NotNull(message = "source should be not null")  LocalTime time,
-		@NotNull(message = "source should be not null") @NotEmpty(message = "source should be not empty") String status) {
+		@NotNull(message = "source should be not null") 
+		@NotEmpty(message = "source should be not empty") String status) {
 }

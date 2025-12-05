@@ -20,12 +20,6 @@ import com.api.service.UserService;
 @Component
 public class TripMapper {
 
-//	@Autowired
-//	private UserRepository userRepository;
-//	
-//	@Autowired
-//	private CarRepository carRepository;
-	
 	@Autowired
 	private CarService carService;
 	

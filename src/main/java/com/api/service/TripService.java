@@ -11,6 +11,10 @@ public interface TripService {
 
 	TripDTO addTrip(TripDTO trip);
 	
+	TripDTO updateTrip(long tid,TripDTO trip);
+	
+	TripDTO updateOwnTrip(long tid,long driverId,TripDTO trip);
+	
 	List<TripDTO> getALL();
 
 	List<TripDTO> GetBySourceAndDestination(String source, String Desti);
@@ -19,9 +23,9 @@ public interface TripService {
 	
 	TripDTO getOneTrip(int id); 
 	
-	TripDTO updateTrip(long tid,TripDTO trip);
-	
 	List<TripDTO> getByDriverName(String driverName);
 		
-	boolean CancelTrip(long id);
+	boolean deleteTrip(long id);
+	
+	boolean deleteOwnTrip(long driverId, long tripId);
 }

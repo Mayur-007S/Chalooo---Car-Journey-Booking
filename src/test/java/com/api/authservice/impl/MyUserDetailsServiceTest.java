@@ -41,9 +41,12 @@ class MyUserDetailsServiceTest {
 		when(repository.findByUsername(ArgumentMatchers.anyString())).thenReturn(user);
 		UserDetails userDetails = detailsService.loadUserByUsername("mayur");
 
-		assertNotNull(userDetails);
-		assertEquals(userDetails.getUsername(), user.getUsername());
+		
+		 assertNotNull(userDetails); 
+		 assertEquals(userDetails.getUsername(),user.getUsername());
+		 
 	}
+	
 	@Test
 	void testLoadUserByUsernameThrowsException() {
 		
