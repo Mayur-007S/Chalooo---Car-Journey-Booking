@@ -1,9 +1,14 @@
 package com.api.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.ResponseEntity;
+
 import com.api.dto.TripDTO;
 import com.api.model.Trip;
 
@@ -28,4 +33,8 @@ public interface TripService {
 	boolean deleteTrip(long id);
 	
 	boolean deleteOwnTrip(long driverId, long tripId);
-}
+
+	/*
+	 * public Page<TripDTO> searchTrips(String origin, String destination, LocalDate
+	 * date, Pageable pageable);
+	 */}

@@ -1,9 +1,15 @@
 package com.api.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +25,7 @@ import com.api.customeexceptions.NotFoundException;
 import com.api.dto.TripDTO;
 import com.api.service.TripService;
 
+import jakarta.annotation.PostConstruct;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
@@ -31,6 +38,22 @@ public class TripController {
 
 	private Logger log = LoggerFactory.getLogger(TripController.class);
 
+
+	/*
+	 * @GetMapping("/search") public ResponseEntity<List<TripDTO>> search(
+	 * 
+	 * @RequestParam(required = false) String source,
+	 * 
+	 * @RequestParam(required = false) String destination,
+	 * 
+	 * @RequestParam(required = false) @DateTimeFormat(iso =
+	 * DateTimeFormat.ISO.DATE) LocalDate date,
+	 * 
+	 * @PageableDefault(size = 20, sort = "departureTime") Pageable pageable ) {
+	 * List<TripDTO> trips = tripService.searchTrips(source, destination, date,
+	 * pageable); return ResponseEntity.status(HttpStatus.OK).body(trips); }
+	 */
+	
 	@PreAuthorize("hasAnyRole('DRIVER','ADMIN')")
 	@PostMapping("/add")
 	public ResponseEntity<TripDTO> addTrip(@RequestBody TripDTO dto) {

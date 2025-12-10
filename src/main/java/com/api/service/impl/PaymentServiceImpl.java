@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.api.customeexceptions.NotFoundException;
 import com.api.dto.PaymentDTO;
 import com.api.dto.mapper.PaymentMapper;
 import com.api.model.Payment;
@@ -17,8 +19,10 @@ import com.api.validation.ObjectValidator;
 public class PaymentServiceImpl implements PaymentService {
 
 	private Logger log = LoggerFactory.getLogger(PaymentServiceImpl.class);
+	
 	@Autowired
 	private PaymentRepository repository;
+	
 	@Autowired
 	private ObjectValidator<PaymentDTO> validator;
 
@@ -35,17 +39,24 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 
 	@Override
-	public PaymentDTO getOne(int payment_id) {
+	public PaymentDTO getOne(int paymentid) {
 		log.info("Inside getOne booking method");
-		var payment = repository.findById(payment_id);
-		return paymentMapper.EntitytoDTO(payment);
+		return repository.findAll().stream()
+				.filter(p -> p.getId() != null && p.getId() == paymentid)
+				.findFirst()
+				.map(paymentMapper::EntitytoDTO)
+				.orElseThrow(() -> new NotFoundException("No Payment found for id: "+paymentid));
+		/* return paymentMapper.EntitytoDTO(payment.get()); */
 	}
 
 	@Override
-	public List<PaymentDTO> getByBookingId(long booking_id) {
+	public List<PaymentDTO> getByBookingId(long bookingid) {
 		log.info("Inside getByBookingId booking method");
-		List<Payment> payment = repository.findByBookingId(booking_id);
-		return paymentMapper.EntitytoDTO(payment);
+		/* List<Payment> payment = repository.findByBookingId(booking_id); */
+		return repository.findAll().stream()
+				.filter(b -> b.getBooking().getId() != null && b.getBooking().getId() == bookingid)
+				.map(paymentMapper::EntitytoDTO)
+				.toList();
 	}
 
 	@Override

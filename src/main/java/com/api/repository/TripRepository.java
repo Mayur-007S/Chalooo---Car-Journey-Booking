@@ -51,4 +51,6 @@ public interface TripRepository extends JpaRepository<Trip, Long>, JpaSpecificat
 			+ "WHERE b.trip_id=:tripId)", nativeQuery = true)
 	int deleteTripIfNoBookings(@Param("tripId") long tripId);
 	
+	
+	
 }

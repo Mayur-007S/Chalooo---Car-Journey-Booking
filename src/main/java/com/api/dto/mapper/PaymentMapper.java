@@ -1,30 +1,22 @@
 package com.api.dto.mapper;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import com.api.customeexceptions.NotFoundException;
 import com.api.dto.PaymentDTO;
 import com.api.model.Booking;
 import com.api.model.Payment;
-import com.api.service.BookingService;
-
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import com.api.repository.BookingRepository;
 
 @Component
 public class PaymentMapper {
 	
 	@Autowired
-	private BookingService bookingService;
+	private BookingRepository bookingRepository; 
 
 	private Logger log = LoggerFactory.getLogger(PaymentMapper.class);
 	
@@ -32,10 +24,13 @@ public class PaymentMapper {
 		log.info("Inside Payment mapper class: DTOtoEntity method ");
 		Payment payment = new Payment();
 		
-		Optional<Booking> book = bookingService.getOne(paymentdto.booking_id()); 
-		if(book.isPresent()) {payment.setBooking(book.get());}
-		else {throw new NotFoundException("booking is not for the payment"); }
+		/* Optional<Booking> book = bookingService.getOne(paymentdto.booking_id()); */ 
+		Booking book = bookingRepository.findAll().stream()
+			.filter(p -> p.getId() != null && p.getId() == paymentdto.booking_id())
+			.findFirst()
+			.orElseThrow(() -> new NotFoundException("booking is not for the payment"));
 		
+		payment.setBooking(book);
 		payment.setAmount(paymentdto.amount());
 		payment.setMethod(paymentdto.method());
 		payment.setStatus(paymentdto.status());
@@ -44,7 +39,7 @@ public class PaymentMapper {
 	}
 	
 	public PaymentDTO EntitytoDTO(Payment payment) {
-		log.info("Inside Payment mapper class EntitytoDTO method");
+		 log.info("Inside Payment mapper class EntitytoDTO method");
 		PaymentDTO paymentdto = new PaymentDTO(
 				 payment.getBooking().getId(),
 			     payment.getAmount(),

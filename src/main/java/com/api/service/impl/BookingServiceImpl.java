@@ -95,13 +95,18 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public List<Booking> getBookingByPassengerName(long id) {
 		log.info("Inside get Booking By Trip method");
-		return repository.findByPassenger(id);
+		return repository.findAll().stream()
+			.filter(b -> b.getPassenger().getId() != null && b.getPassenger().getId() == id)
+			.toList();
+		/* return repository.findByPassenger(id); */
 	}
 
 	@Override
-	public Optional<Booking> getOne(long pid) {
-		// TODO Auto-generated method stub
-		return repository.findById(pid);
+	public Optional<Booking> getOne(long bid) {
+		log.info("Inside get one Booking method");
+		return repository.findAll().stream()
+			.filter(b -> b.getPassenger().getId() != null && b.getPassenger().getId() == bid)
+			.findFirst();
 	}
 
 	@Override
@@ -119,7 +124,9 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public List<Booking> getByTripId(long tripId) {
 		log.info("Inside getByTripId method");
-		return repository.findByTrip(tripId);
+		return repository.findAll().stream()
+				.filter(b -> b.getTrip().getId() != null && b.getTrip().getId() == tripId)
+				.toList();
 	}
 
 }

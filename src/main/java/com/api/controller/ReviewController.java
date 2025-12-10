@@ -68,4 +68,23 @@ public class ReviewController {
 		}
 		throw new NotFoundException("Reviews: Not found for trip id: " + tripId);
 	}
+	
+	@PreAuthorize("hasAnyRole('ADMIN')")
+	@PostMapping("/deleteReview")
+	public ResponseEntity<String> deleteReview(@RequestParam("reviewId") long reviewId){
+		log.info("Inside delete review ");
+		reviewService.deleteReview(reviewId);
+		return ResponseEntity.status(HttpStatus.OK).body("Review Deleted Successfully.!!!");
+	}
+	
+	@PreAuthorize("hasAnyRole('PASSENGER','ADMIN')")
+	@PostMapping("/deleteOwnReview")
+	public ResponseEntity<String> deleteOwnReview(
+			@RequestParam("reviewId") long reviewId,
+			@RequestParam("userId") long userId
+			){
+		log.info("Inside delete review ");
+		reviewService.deleteOwnReview(reviewId, userId);
+		return ResponseEntity.status(HttpStatus.OK).body("Review Deleted Successfully.!!!");
+	}
 }

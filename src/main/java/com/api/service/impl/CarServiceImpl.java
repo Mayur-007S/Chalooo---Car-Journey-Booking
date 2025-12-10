@@ -58,14 +58,18 @@ public class CarServiceImpl implements CarService {
 		User user = userService.UserByUsername(username);
 		if(user == null) { throw new NotFoundException("No user found with owner name: "+username);}
 		
-		return repository.findByOwnerId(user.getId());
+		return repository.findAll().stream()
+				.filter(c -> c.getOwner().getId() != null && c.getOwner().getId() == user.getId())
+				.toList();
 	}
 
 	@Override
 	public Car updateCar(long cid,CarDTO cardto) {
 		log.info("Inside add car method");
 		validator.validate(cardto);
-		Car car1 = repository.findById(cid)
+		Car car1 = repository.findAll().stream()
+				.filter(c -> c.getId() != null && c.getId() == cid)
+				.findFirst()
 				.orElseThrow(() -> new NotFoundException("Car with id: "+cid+" "+"not found. !!!"));
 		
 		car1.setModel(cardto.model());
@@ -89,7 +93,9 @@ public class CarServiceImpl implements CarService {
 		User user = userService.UserByUsername(username);
 		if(user == null) { throw new NotFoundException("No user found with owner name: "+username);}
 		
-		Optional<Car> car = repository.findById(cid);
+		Optional<Car> car = repository.findAll().stream()
+				.filter(c -> c.getId() != null && c.getId() == cid)
+				.findFirst();
 		if(car.isPresent()) {
 			repository.deleteByOwnerId(cid, user.getId());
 		}else {
@@ -101,6 +107,8 @@ public class CarServiceImpl implements CarService {
 	@Override
 	public Optional<Car> getOneCar(Long cid) {
 		log.info("Inside get one car method");
-		return repository.findById(cid);
+		return repository.findAll().stream()
+				.filter(c -> c.getId() != null && c.getId() == cid)
+				.findFirst();
 	}
 }

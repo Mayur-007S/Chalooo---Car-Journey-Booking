@@ -11,8 +11,11 @@ public interface ReviewService {
 	
 	List<Review> getAll();
 	
-	Review getOne(long reviewerId);
+	Review getOne(long reviewId);
 	
 	List<Review> getByTripId(int tripId);
 	
+	void deleteReview(long reviewId);
+	
+	void deleteOwnReview(long reviewId, long reviewerId);
 }

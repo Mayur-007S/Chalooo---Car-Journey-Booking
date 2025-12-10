@@ -20,14 +20,13 @@ import com.api.service.UserService;
 @Component
 public class TripMapper {
 
-	@Autowired
-	private CarService carService;
+	private  CarService carService;
 	
-	@Autowired
-	private UserService userService;
+	private  UserService userService;
 	
-	private Logger log = LoggerFactory.getLogger(TripMapper.class);
+	private  Logger log = LoggerFactory.getLogger(TripMapper.class);
 	
+
 	public TripDTO tripToTripDto(Trip trip) {
 		log.info("Inside Trip to DTO Method");
 		TripDTO tripdto = new TripDTO(
