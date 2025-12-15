@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
+import org.springframework.data.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +17,9 @@ import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.CacheEvict;
 import com.api.customeexceptions.NotFoundException;
 import com.api.dto.TripDTO;
 import com.api.dto.mapper.TripMapper;
@@ -33,16 +36,20 @@ import jakarta.annotation.PostConstruct;
 @Service
 public class TripServiceImpl implements TripService {
 
-	@Autowired private TripRepository tripRepository;
+	@Autowired
+	private TripRepository tripRepository;
 
-	@Autowired private UserRepository userRepository;
+	@Autowired
+	private UserRepository userRepository;
 
-	@Autowired private TripMapper tripMapper;
+	@Autowired
+	private TripMapper tripMapper;
 
-	@Autowired private ObjectValidator<Object> validator;
+	@Autowired
+	private ObjectValidator<Object> validator;
 
 	private Logger log = LoggerFactory.getLogger(TripServiceImpl.class);
-	
+
 	@Override
 	public TripDTO addTrip(TripDTO dto) {
 		log.info("Inside add trip method");
@@ -53,103 +60,110 @@ public class TripServiceImpl implements TripService {
 	}
 
 	@Override
+	@CachePut(value = "trips", key = "#tid")
 	public TripDTO updateTrip(long tid, TripDTO dto) {
 		log.info("Inside update trip method");
 		validator.validate(dto);
-		Trip trip = tripRepository.findAll()
-				.stream()
-				.filter(t -> t.getId() != null && t.getId() == tid)
-				.findFirst()
+		Trip trip = tripRepository.findById(tid)
 				.orElseThrow(() -> new NotFoundException("Trip with id: " + tid + " " + "not found exception. !!!"));
 
 		trip.setStartDateTime(dto.startDateTime());
 		trip.setDepartureDateTime(dto.departureDateTime());
 		trip.setTotalSeats(dto.totalSeats());
 		trip.setAvailableSeats(dto.availableSeats());
-		
+
 		Trip trip2 = tripRepository.save(trip);
 		return tripMapper.tripToTripDto(trip2);
 	}
-	
+
 	@Override
 	public TripDTO updateOwnTrip(long tripid, long driverId, TripDTO tripdto) {
 		log.info("Inside update trip method");
 		validator.validate(tripdto);
-		
-		Trip trip = tripRepository.findByDriverId(driverId).get().stream()
-					.filter(t -> t.getId() == tripid)
-					.findFirst()
-					.orElseThrow(() -> new NotFoundException("No Trip Found by Driver"));
-		
-		if(trip == null) { throw new NotFoundException("No Trip For Driver with id: "+driverId); }
-		
+
+		Trip trip = tripRepository.findByDriverId(driverId).get().stream().filter(t -> t.getId() == tripid).findFirst()
+				.orElseThrow(() -> new NotFoundException("No Trip Found by Driver"));
+
+		if (trip == null) {
+			throw new NotFoundException("No Trip For Driver with id: " + driverId);
+		}
+
 		trip.setStartDateTime(tripdto.startDateTime());
 		trip.setDepartureDateTime(tripdto.departureDateTime());
 		trip.setTotalSeats(tripdto.totalSeats());
 		trip.setAvailableSeats(tripdto.availableSeats());
-		
-		
+
 		Trip trip2 = tripRepository.save(trip);
 		return tripMapper.tripToTripDto(trip2);
 	}
-	
+
 	@Override
 	public List<TripDTO> getALL() {
 		log.info("Inside getall trip method");
 		/* List<Trip> trips = tripRepository.findAll(); */
-		 List<Trip> trips = tripRepository.findAll();
+		List<Trip> trips = tripRepository.findAll();
 
 		if (trips.isEmpty()) {
 			throw new NotFoundException("No Trips Found in database. " + "Please try later.");
 		}
-		
+
 		return tripMapper.tripToTripDto(trips);
+	}
+
+	@Override
+	public Page<TripDTO> getALL(int size, int page, String sortBy, String direction) {
+		log.info("Inside getall trip method");
+
+		Sort sort = direction.equals("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+		var pageable = PageRequest.of(page, size, sort);
+
+		Page<Trip> trips = tripRepository.findAll(pageable);
+
+		if (trips.isEmpty()) {
+			throw new NotFoundException("No Trips Found in database. " + "Please try later.");
+		}
+
+		Page<TripDTO> dto = trips.map(tripMapper::tripToTripDto);
+		return dto;
 	}
 
 	@Override
 	public List<TripDTO> GetBySourceAndDestination(String source, String Desti) {
 		log.info("Inside get by source and destination trip method");
-//		List<Trip> trips = tripRepository.getBySourceAndDestination(source.toLowerCase(), Desti.toLowerCase());
-		List<TripDTO> trips = tripRepository.findAll().stream()
-				.filter(t -> t.getSource() != null && t.getDestination() != null)
-				.filter(t -> t.getSource().equalsIgnoreCase(source) && t.getDestination().equalsIgnoreCase(Desti))
-				.map(tripMapper::tripToTripDto)
-				.toList();
+		List<Trip> trips = tripRepository.getBySourceAndDestination(source.toLowerCase(), Desti.toLowerCase());
 		
 		if (trips.isEmpty()) {
 			throw new NotFoundException("No Trips Found with source: " + source + " Destination: " + Desti + " !!!");
 		}
 
-		return trips;
+		return tripMapper.tripToTripDto(trips);
 	}
 
 	@Override
+	@Cacheable(value = "trips", key = "#tripid")
 	public TripDTO getOneTrip(int tripid) {
 		log.info("Inside get by id trip method");
-		return tripRepository.findAll()
-				.stream()
-				.filter(t -> t.getId() != null && t.getId() == tripid)
-				.findFirst()
-				.map(tripMapper::tripToTripDto)
-				.orElseThrow(() -> new NotFoundException("Trip Not Found with trip id: "+tripid));
+		return tripRepository.findById((long) tripid).map(tripMapper::tripToTripDto)
+				.orElseThrow(() -> new NotFoundException("Trip Not Found with trip id: " + tripid));
 
 	}
 
 	@Override
 	public List<TripDTO> getByDriverName(String driverName) {
 		log.info("Inside get By Driver Name Method");
-		User user = userRepository.findAll()
-				.stream()
-				.filter(u -> u.getUsername() != null && u.getUsername().equalsIgnoreCase(driverName))
-				.findFirst()
+		User user = userRepository.findAll().stream()
+				.filter(u -> u.getUsername() != null && u.getUsername().equalsIgnoreCase(driverName)).findFirst()
 				.orElseThrow(() -> new NotFoundException("Driver Not Found"));
 
-		List<TripDTO> listoftrips = tripRepository.findAll().stream()
-				.filter(t -> t.getDriver().getId() != null && t.getDriver().getId() == user.getId())
-				.map(tripMapper::tripToTripDto)
-				.toList();
+		List<Trip> listoftrips = tripRepository.findByDriverId(user.getId()).get();
 		
-			return listoftrips;
+		
+//		List<TripDTO> listoftrips = tripRepository.findAll().stream()
+//				.filter(t -> t.getDriver().getId() != null && t.getDriver().getId() == user.getId())
+//				.map(tripMapper::tripToTripDto).toList();
+
+		return tripMapper.tripToTripDto(listoftrips);
+				
 	}
 
 	@Override
@@ -163,14 +177,15 @@ public class TripServiceImpl implements TripService {
 	}
 
 	@Override
+	@CacheEvict(value = "trips", key = "#tripId")
 	public boolean deleteTrip(long tripId) {
 		log.info("Inside CancelTrip method");
-		
+
 		int rows = tripRepository.deleteTripIfNoBookings(tripId);
-		log.info("Rows effected: "+rows);
-		if(rows > 0) {
+		log.info("Rows effected: " + rows);
+		if (rows > 0) {
 			return true;
-		}else {
+		} else {
 			return false;
 		}
 	}
@@ -178,21 +193,26 @@ public class TripServiceImpl implements TripService {
 	@Override
 	public boolean deleteOwnTrip(long driverId, long tripId) {
 		log.info("Inside deleteOwnTrip method");
-		
+
 		int rows = tripRepository.deleteOwnTripIfNoBookings(driverId, tripId);
-		log.info("Rows effected: "+rows);
-		if(rows > 0) {
+		log.info("Rows effected: " + rows);
+		if (rows > 0) {
 			return true;
-		}else {
+		} else {
 			return false;
 		}
-		
+
 	}
 
-	/*
-	 * @Override public Page<TripDTO> searchTrips(String origin, String destination,
-	 * LocalDate date, Pageable pageable) { Specification<Trip> spec =
-	 * TripSpecification.filterBy(origin, destination, date); return
-	 * tripRepository.findAll(spec, pageable).map(tripMapper::toDto); }
-	 */
+	@Override
+	public Page<Trip> getByDriverId(long driverId, int page, int size, String sortBy, String direction) {
+		log.info("Inside get by driver name with pagination and sorting");
+
+		Sort sort = direction.equals("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+
+		var pageable = PageRequest.of(page, size, sort);
+
+		return tripRepository.findByDriverId(driverId, pageable);
+	}
+
 }

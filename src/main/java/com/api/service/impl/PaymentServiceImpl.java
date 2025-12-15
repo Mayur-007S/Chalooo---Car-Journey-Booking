@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CachePut;
 
 import com.api.customeexceptions.NotFoundException;
 import com.api.dto.PaymentDTO;
@@ -19,10 +21,10 @@ import com.api.validation.ObjectValidator;
 public class PaymentServiceImpl implements PaymentService {
 
 	private Logger log = LoggerFactory.getLogger(PaymentServiceImpl.class);
-	
+
 	@Autowired
 	private PaymentRepository repository;
-	
+
 	@Autowired
 	private ObjectValidator<PaymentDTO> validator;
 
@@ -30,6 +32,7 @@ public class PaymentServiceImpl implements PaymentService {
 	private PaymentMapper paymentMapper;
 
 	@Override
+	@CachePut(value = "payments", key = "#result.id")
 	public PaymentDTO addPayment(PaymentDTO paymentdto) {
 		log.info("Inside add Payment method");
 		validator.validate(paymentdto);
@@ -39,24 +42,21 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 
 	@Override
+	@Cacheable(value = "payments", key = "#paymentid")
 	public PaymentDTO getOne(int paymentid) {
 		log.info("Inside getOne booking method");
-		return repository.findAll().stream()
-				.filter(p -> p.getId() != null && p.getId() == paymentid)
-				.findFirst()
-				.map(paymentMapper::EntitytoDTO)
-				.orElseThrow(() -> new NotFoundException("No Payment found for id: "+paymentid));
-		/* return paymentMapper.EntitytoDTO(payment.get()); */
+		Payment payment = repository.findById(paymentid);
+		if (payment == null) {
+			throw new NotFoundException("No Payment found for id: " + paymentid);
+		}
+		return paymentMapper.EntitytoDTO(payment);
 	}
 
 	@Override
 	public List<PaymentDTO> getByBookingId(long bookingid) {
 		log.info("Inside getByBookingId booking method");
-		/* List<Payment> payment = repository.findByBookingId(booking_id); */
-		return repository.findAll().stream()
-				.filter(b -> b.getBooking().getId() != null && b.getBooking().getId() == bookingid)
-				.map(paymentMapper::EntitytoDTO)
-				.toList();
+		List<Payment> payment = repository.findByBookingId(bookingid);
+		return paymentMapper.EntitytoDTO(payment);
 	}
 
 	@Override

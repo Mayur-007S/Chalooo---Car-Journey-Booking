@@ -1,13 +1,16 @@
 package com.api.mail.service;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+
+import com.api.model.Booking;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -16,15 +19,18 @@ import jakarta.mail.internet.MimeMessage;
 public class MailServiceImpl implements MailService{
 
 	private JavaMailSender javaMailSender;
+	private SpringTemplateEngine templateEngine;
+	private Logger log = LoggerFactory.getLogger(MailServiceImpl.class);
 	
-	public MailServiceImpl(JavaMailSender javaMailSender) {
+	public MailServiceImpl(JavaMailSender javaMailSender, SpringTemplateEngine templateEngine) {
 		this.javaMailSender = javaMailSender;
+		this.templateEngine = templateEngine;
 	}
 
 	@Override
 	public void sendEmail(String to, String subject, String username)
 			throws MessagingException, IOException {
-		
+		log.info("Inside send email method.!!!");
 		MimeMessage message = javaMailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message,true,"UTF-8");
 		
@@ -63,6 +69,24 @@ public class MailServiceImpl implements MailService{
 		
 		helper.setText(context, true);
 		
+		javaMailSender.send(message);
+	}
+
+	@Override
+	public void confirmEmailtoPassenger(String passenger_email, Booking book) throws MessagingException {
+		log.info("Inside confirm Email to Passenger method");
+		MimeMessage message = javaMailSender.createMimeMessage();
+		MimeMessageHelper helper = new MimeMessageHelper(message,true,"UTF-8");
+		
+		Context context = new Context();
+		context.setVariable("book", book); 
+		
+		String html = templateEngine.process("emailTemplate", context);
+		
+		helper.setTo(passenger_email);
+        helper.setSubject("Trip Confirmed – Chaloo");
+		helper.setText(html, true);
+		log.info("Email has sent to: {}",passenger_email);
 		javaMailSender.send(message);
 	}
 

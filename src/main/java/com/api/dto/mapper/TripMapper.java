@@ -20,8 +20,10 @@ import com.api.service.UserService;
 @Component
 public class TripMapper {
 
+	@Autowired
 	private  CarService carService;
 	
+	@Autowired
 	private  UserService userService;
 	
 	private  Logger log = LoggerFactory.getLogger(TripMapper.class);

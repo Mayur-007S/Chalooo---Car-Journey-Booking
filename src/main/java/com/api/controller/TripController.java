@@ -6,9 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.api.customeexceptions.NotFoundException;
 import com.api.dto.TripDTO;
+import com.api.model.Trip;
 import com.api.service.TripService;
 
 import jakarta.annotation.PostConstruct;
@@ -38,22 +41,17 @@ public class TripController {
 
 	private Logger log = LoggerFactory.getLogger(TripController.class);
 
+	@GetMapping("/search")
+	public ResponseEntity<Page<TripDTO>> search(
+			@RequestParam(value = "page", defaultValue = "1") int page,
+			@RequestParam(value = "size", defaultValue = "1") int size,
+			@RequestParam(value = "sortBy", defaultValue = "id") String sortBy,
+			@RequestParam(value = "direction", defaultValue = "asc") String direction)
+	{
+		Page<TripDTO> trips = tripService.getALL(size, page, sortBy, direction);
+		return ResponseEntity.status(HttpStatus.OK).body(trips);
+	}
 
-	/*
-	 * @GetMapping("/search") public ResponseEntity<List<TripDTO>> search(
-	 * 
-	 * @RequestParam(required = false) String source,
-	 * 
-	 * @RequestParam(required = false) String destination,
-	 * 
-	 * @RequestParam(required = false) @DateTimeFormat(iso =
-	 * DateTimeFormat.ISO.DATE) LocalDate date,
-	 * 
-	 * @PageableDefault(size = 20, sort = "departureTime") Pageable pageable ) {
-	 * List<TripDTO> trips = tripService.searchTrips(source, destination, date,
-	 * pageable); return ResponseEntity.status(HttpStatus.OK).body(trips); }
-	 */
-	
 	@PreAuthorize("hasAnyRole('DRIVER','ADMIN')")
 	@PostMapping("/add")
 	public ResponseEntity<TripDTO> addTrip(@RequestBody TripDTO dto) {
@@ -131,8 +129,7 @@ public class TripController {
 		if (dto2 != null) {
 			return ResponseEntity.status(HttpStatus.OK).body(dto2);
 		}
-		throw new NullPointerException("Trip Not Added Object is null. " + 
-		"Please enter information properly" + dto2);
+		throw new NullPointerException("Trip Not Added Object is null. " + "Please enter information properly" + dto2);
 	}
 
 	@PreAuthorize("hasAnyRole('DRIVER','ADMIN')")
@@ -168,6 +165,20 @@ public class TripController {
 		} else {
 			return ResponseEntity.status(HttpStatus.OK).body("Trips Can't be delete becaus trip has book someone.!!!");
 		}
+	}
+
+	@PreAuthorize("hasAnyRole('DRIVER','ADMIN')")
+	@GetMapping("/tripbydriverid")
+	public ResponseEntity<Page<Trip>> getByDriverId(@RequestParam("driverId") long driverId,
+			@RequestParam(value = "page", defaultValue = "1") int page,
+			@RequestParam(value = "size", defaultValue = "1") int size,
+			@RequestParam(value = "sortBy", defaultValue = "start_date_time") String sortBy,
+			@RequestParam(value = "direction", defaultValue = "asc") String direction) {
+		Page<Trip> pages = tripService.getByDriverId(driverId, page, size, sortBy, direction);
+		if (pages.isEmpty()) {
+			throw new NotFoundException("Trips not found for driver with id: " + driverId);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(pages);
 	}
 
 }

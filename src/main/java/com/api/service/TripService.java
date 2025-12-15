@@ -21,6 +21,8 @@ public interface TripService {
 	TripDTO updateOwnTrip(long tid,long driverId,TripDTO trip);
 	
 	List<TripDTO> getALL();
+	
+	Page<TripDTO> getALL(int size, int page, String sortBy, String direction);
 
 	List<TripDTO> GetBySourceAndDestination(String source, String Desti);
 
@@ -29,6 +31,8 @@ public interface TripService {
 	TripDTO getOneTrip(int id); 
 	
 	List<TripDTO> getByDriverName(String driverName);
+	
+	Page<Trip> getByDriverId(long driverId, int page, int size,String sortBy, String direction);
 		
 	boolean deleteTrip(long id);
 	

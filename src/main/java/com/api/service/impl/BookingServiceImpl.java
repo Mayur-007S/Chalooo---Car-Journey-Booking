@@ -1,6 +1,5 @@
 package com.api.service.impl;
 
-import java.awt.print.Book;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -9,13 +8,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.CacheEvict;
 
 import com.api.customeexceptions.NotFoundException;
 import com.api.dto.BookDTO;
-import com.api.dto.TripDTO;
+
 import com.api.dto.mapper.TripMapper;
 import com.api.model.Booking;
-import com.api.model.Payment;
+
 import com.api.model.Trip;
 import com.api.model.User;
 import com.api.repository.BookingRepository;
@@ -45,10 +48,16 @@ public class BookingServiceImpl implements BookingService {
 
 	@Autowired
 	private TripRepository tripRepository;
+	
+	@Autowired
+	private TripService tripService;
 
 	@Autowired
 	private TripMapper mapper;
 
+	
+	@Transactional(rollbackFor = { IllegalStateException.class, NotFoundException.class })
+	@CachePut(cacheNames = {"bookings", "trips"}, key = "#result.id")
 	@Override
 	public Booking addBooking(BookDTO dto) {
 		log.info("Inside add booking method");
@@ -58,13 +67,14 @@ public class BookingServiceImpl implements BookingService {
 		Trip trip = tripRepository.findById(dto.trip_id())
 				.orElseThrow(() -> new NotFoundException("Trip not found for id: " + dto.trip_id()));
 
-		if (trip.getAvailableSeats() < dto.seatsBooked()) {
-			throw new NotFoundException("Not enough seats available");
-		}
-
 		if (trip.getDepartureDateTime().isBefore(LocalDateTime.now())) {
-			throw new NotFoundException("Cannot book past trips");
-		}
+	        throw new IllegalStateException("Cannot book past trips");
+	    }
+
+	    if (trip.getAvailableSeats() < dto.seatsBooked()) {
+	        throw new IllegalStateException("Not enough seats available");
+	    }
+
 
 		User user = userService.getOneUser(dto.passenger_id());
 		if (user == null) {
@@ -80,7 +90,7 @@ public class BookingServiceImpl implements BookingService {
 		book.setPassenger(user);
 
 		trip.setAvailableSeats(trip.getAvailableSeats() - dto.seatsBooked());
-		
+
 		tripRepository.save(trip);
 
 		return repository.save(book);
@@ -95,25 +105,22 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public List<Booking> getBookingByPassengerName(long id) {
 		log.info("Inside get Booking By Trip method");
-		return repository.findAll().stream()
-			.filter(b -> b.getPassenger().getId() != null && b.getPassenger().getId() == id)
-			.toList();
-		/* return repository.findByPassenger(id); */
+		return repository.findByPassenger(id);
 	}
 
 	@Override
+	@Cacheable(value = "bookings", key = "#bid")
 	public Optional<Booking> getOne(long bid) {
 		log.info("Inside get one Booking method");
-		return repository.findAll().stream()
-			.filter(b -> b.getPassenger().getId() != null && b.getPassenger().getId() == bid)
-			.findFirst();
+		return repository.findById(bid);
 	}
 
 	@Override
+	@CacheEvict(value = "bookings", key = "#book_id")
 	public boolean cancelBooking(long book_id) {
 		log.info("Inside cancel booking method");
 		Booking book = repository.findById(book_id).get();
-		if(book != null) {
+		if (book != null) {
 			book.setStatus("CANCEL");
 			repository.save(book);
 			return true;
@@ -124,9 +131,7 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public List<Booking> getByTripId(long tripId) {
 		log.info("Inside getByTripId method");
-		return repository.findAll().stream()
-				.filter(b -> b.getTrip().getId() != null && b.getTrip().getId() == tripId)
-				.toList();
+		return repository.findByTrip(tripId);
 	}
 
 }

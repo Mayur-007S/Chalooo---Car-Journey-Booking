@@ -10,6 +10,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CachePut;
 
 import com.api.controller.UserController;
 import com.api.model.User;
@@ -19,20 +21,20 @@ import com.api.validation.ObjectValidator;
 
 @Service
 public class UserServiceImpl implements UserService {
-	
+
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private AuthenticationManager authenticationManager;
-	
+
 	@Autowired
 	private ObjectValidator<User> userValidator;
 
 	@Autowired
 	private JwtService jwtService;
-	
-	  private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+
+	private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
 	@Override
 	public List<User> getAllUsers() {
@@ -41,25 +43,24 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@CachePut(value = "users", key = "#result.id")
 	public User addUser(User user) {
 		logger.info("Inside addUser method of UserServiceImpl");
 		logger.info("Validating user details");
 		userValidator.validate(user);
-		
+
 		return userRepository.save(user);
 	}
-
 
 	@Override
 	public String verifyUser(User user) {
 		logger.info("Inside verifyUser method of UserServiceImpl");
 		logger.info("Validating user details");
 		userValidator.validate(user);
-		
-		Authentication authentication =
-			authenticationManager.authenticate(
-			new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
-		if(authentication.isAuthenticated()) {
+
+		Authentication authentication = authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+		if (authentication.isAuthenticated()) {
 			logger.info("User is authenticated");
 			return jwtService.generateToken(user.getUsername());
 		}
@@ -68,6 +69,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Cacheable(value = "users", key = "#email")
 	public User UserByEmail(String email) {
 		logger.info("Inside UserByEmail method of UserServiceImpl");
 		logger.info("Exit from UserByEmail method of UserServiceImpl");
@@ -75,18 +77,21 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Cacheable(value = "users", key = "#username")
 	public User UserByUsername(String username) {
 		logger.info("Inside UserByName method of UserServiceImpl");
 		return userRepository.findByUsername(username.toLowerCase());
 	}
 
 	@Override
+	@Cacheable(value = "users", key = "#uid")
 	public User getOneUser(int uid) {
 		logger.info("Inside UserById method of UserServiceImpl");
 		return userRepository.findById(uid);
 	}
 
 	@Override
+	@Cacheable(value = "users", key = "#uid")
 	public Optional<User> getOneUser(Long uid) {
 		logger.info("Inside UserById method of UserServiceImpl");
 		return userRepository.findById(uid);

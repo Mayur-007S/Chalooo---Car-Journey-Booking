@@ -2,8 +2,8 @@ package com.api.repository;
 
 import java.util.List;
 import java.util.Optional;
-
-import org.hibernate.query.NativeQuery;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -25,6 +25,11 @@ public interface TripRepository extends JpaRepository<Trip, Long>, JpaSpecificat
 	@Modifying
 	@Query(value = "SELECT * FROM trips WHERE driver_id = :did", nativeQuery = true)
 	Optional<List<Trip>> findByDriverId(@Param(value = "did") long did);
+	
+	@Query(value = "SELECT * FROM trips WHERE driver_id = :did", nativeQuery = true)
+	Page<Trip> findByDriverId(@Param(value = "did") long did, Pageable pageable);
+	
+	Page<Trip> findAll(Pageable pageable);
 	
 	@Modifying
 	@Query(value = "SELECT * FROM chaloo_db.trips WHERE "

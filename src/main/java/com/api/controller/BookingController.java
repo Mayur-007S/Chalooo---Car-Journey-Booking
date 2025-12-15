@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,10 +20,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import com.api.customeexceptions.NotFoundException;
 import com.api.dto.BookDTO;
+import com.api.mail.service.MailService;
 import com.api.model.Booking;
 import com.api.model.User;
 import com.api.service.BookingService;
 import com.api.service.UserService;
+
+import jakarta.mail.MessagingException;
 
 @RestController
 @RequestMapping("api/v1/bookings")
@@ -34,13 +38,19 @@ public class BookingController {
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	private MailService mailService;
+
 	private Logger log = LoggerFactory.getLogger(BookingController.class);
 
 	@PreAuthorize("hasAnyRole('PASSENGER','ADMIN')")
 	@PostMapping("/add")
-	public ResponseEntity<Booking> addBookings(@RequestBody BookDTO dto) {
+	public ResponseEntity<Booking> addBookings(@RequestBody BookDTO dto) throws MessagingException {
 		log.info("Inside add bookings method");
 		Booking book = service.addBooking(dto);
+		
+		mailService.confirmEmailtoPassenger(book.getPassenger().getEmail(), book);
+		
 		if (book != null) {
 			return ResponseEntity.status(HttpStatus.CREATED).body(book);
 		}

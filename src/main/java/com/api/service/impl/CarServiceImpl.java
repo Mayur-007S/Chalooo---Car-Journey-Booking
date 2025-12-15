@@ -7,6 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.CacheEvict;
 
 import com.api.customeexceptions.NotFoundException;
 import com.api.dto.CarDTO;
@@ -24,15 +27,15 @@ public class CarServiceImpl implements CarService {
 
 	@Autowired
 	private ObjectValidator<CarDTO> validator;
-	
+
 	@Autowired
 	private CarRepository repository;
-	
+
 	@Autowired
 	private UserService userService;
-	
+
 	private Logger log = LoggerFactory.getLogger(CarServiceImpl.class);
-	
+
 	@Override
 	public Car addCar(CarDTO cardto) {
 		log.info("Inside add car method");
@@ -42,13 +45,12 @@ public class CarServiceImpl implements CarService {
 		car.setPlateNo(cardto.plateNo());
 		car.setSeats(cardto.seats());
 		User user = userService.getOneUser(cardto.owner_id());
-		if(user == null) {
-			throw new NotFoundException("Owner with id: "+cardto.owner_id()
-			+" not found. Please enter valide ownere id. !!!");
+		if (user == null) {
+			throw new NotFoundException("Owner with id: " + cardto.owner_id()
+					+ " not found. Please enter valide ownere id. !!!");
 		}
 		car.setOwner(user);
 
-		
 		return repository.save(car);
 	}
 
@@ -56,59 +58,58 @@ public class CarServiceImpl implements CarService {
 	public List<Car> getALLByOwner(String username) {
 		log.info("Inside get all car method");
 		User user = userService.UserByUsername(username);
-		if(user == null) { throw new NotFoundException("No user found with owner name: "+username);}
-		
+		if (user == null) {
+			throw new NotFoundException("No user found with owner name: " + username);
+		}
+
 		return repository.findAll().stream()
 				.filter(c -> c.getOwner().getId() != null && c.getOwner().getId() == user.getId())
 				.toList();
 	}
 
 	@Override
-	public Car updateCar(long cid,CarDTO cardto) {
+	@CachePut(value = "cars", key = "#cid")
+	public Car updateCar(long cid, CarDTO cardto) {
 		log.info("Inside add car method");
 		validator.validate(cardto);
-		Car car1 = repository.findAll().stream()
-				.filter(c -> c.getId() != null && c.getId() == cid)
-				.findFirst()
-				.orElseThrow(() -> new NotFoundException("Car with id: "+cid+" "+"not found. !!!"));
-		
+		Car car1 = repository.findById(cid)
+				.orElseThrow(() -> new NotFoundException("Car with id: " + cid + " " + "not found. !!!"));
+
 		car1.setModel(cardto.model());
 		car1.setPlateNo(cardto.plateNo());
 		car1.setSeats(cardto.seats());
-		
+
 		User user = userService.getOneUser(cardto.owner_id());
-		if(user == null) {
-			throw new NotFoundException("Owner with id: "+cardto.owner_id()
-			+" not found. Please enter valide ownere id. !!!");
+		if (user == null) {
+			throw new NotFoundException("Owner with id: " + cardto.owner_id()
+					+ " not found. Please enter valide ownere id. !!!");
 		}
 		car1.setOwner(user);
-		
+
 		return repository.save(car1);
 	}
 
 	@Override
-	public void deleteCarByOwner(String username,long cid) 
-	{
+	@CacheEvict(value = "cars", key = "#cid")
+	public void deleteCarByOwner(String username, long cid) {
 		log.info("Inside delete car method");
 		User user = userService.UserByUsername(username);
-		if(user == null) { throw new NotFoundException("No user found with owner name: "+username);}
-		
-		Optional<Car> car = repository.findAll().stream()
-				.filter(c -> c.getId() != null && c.getId() == cid)
-				.findFirst();
-		if(car.isPresent()) {
-			repository.deleteByOwnerId(cid, user.getId());
-		}else {
-			throw new NotFoundException("Car with id: "+cid+" not found. !!!");
+		if (user == null) {
+			throw new NotFoundException("No user found with owner name: " + username);
 		}
-	
+
+		if (repository.existsById(cid)) {
+			repository.deleteByOwnerId(cid, user.getId());
+		} else {
+			throw new NotFoundException("Car with id: " + cid + " not found. !!!");
+		}
+
 	}
 
 	@Override
+	@Cacheable(value = "cars", key = "#cid")
 	public Optional<Car> getOneCar(Long cid) {
 		log.info("Inside get one car method");
-		return repository.findAll().stream()
-				.filter(c -> c.getId() != null && c.getId() == cid)
-				.findFirst();
+		return repository.findById(cid);
 	}
 }

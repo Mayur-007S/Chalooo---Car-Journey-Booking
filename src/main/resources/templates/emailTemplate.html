@@ -1,0 +1,137 @@
+<!-- =============================== -->
+
+<!-- CHALOO | TRIP CONFIRMATION EMAIL -->
+
+<!-- Thymeleaf Template | Spring MVC -->
+
+<!-- Email-safe HTML (Gmail / Outlook) -->
+
+<!-- =============================== -->
+
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>Trip Confirmed – Chaloo</title>
+</head>
+
+<body
+	style="margin: 0; padding: 0; background-color: #f4f6f8; font-family: Arial, Helvetica, sans-serif;">
+
+	<table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+		style="background-color: #f4f6f8; padding: 20px;">
+		<tr>
+			<td align="center">``` <!-- Main Container -->
+				<table width="600" cellpadding="0" cellspacing="0"
+					role="presentation"
+					style="background-color: #ffffff; border-radius: 10px; overflow: hidden;">
+
+					<!-- Header -->
+					<tr>
+						<td
+							style="background-color: #0a66c2; padding: 24px; text-align: center;">
+							<h1 style="margin: 0; font-size: 26px; color: #ffffff;">🚗
+								Chaloo Ride Sharing Platform</h1>
+							<p style="margin: 8px 0 0; font-size: 14px; color: #e6f0ff;">Trip
+								Confirmed & On the Way</p>
+						</td>
+					</tr>
+
+					<!-- Body -->
+					<tr>
+						<td style="padding: 30px; color: #333333;">
+
+							<p style="font-size: 16px; margin: 0 0 12px;">
+								Dear <strong th:text="${book.getPassenger().getUsername()}">User</strong>,
+							</p>
+
+							<p style="font-size: 15px; line-height: 1.6; margin: 0 0 18px;">
+								We are pleased to inform you that your trip has been <strong>successfully
+									confirmed</strong>. At <strong>Chaloo</strong>, every journey is treated
+								with care, responsibility, and trust.
+							</p> <!-- Trip Details -->
+							<table width="100%" cellpadding="0" cellspacing="0"
+								role="presentation"
+								style="background-color: #fafafa; border: 1px solid #e6e6e6; border-radius: 8px; margin: 20px 0;">
+								<tr>
+									<td style="padding: 16px; font-size: 14px; line-height: 1.7;">
+										<p style="margin: 0;">
+											<strong>Booking ID:</strong> <span
+												th:text="${book.getId()}"></span>
+										</p>
+										<p style="margin: 0;">
+											<strong>Pickup Location:</strong> <span
+												th:text="${book.getTrip().getSource()}"></span>
+										</p>
+										<p style="margin: 0;">
+											<strong>Drop Location:</strong> <span th:text="${book.getTrip().getDestination()}"></span>
+										</p>
+										<p style="margin: 0;">
+											<strong>Date & Time:</strong> <span
+												th:text="${book.getDate()}"> </span>
+												<span 
+												th:text="${book.getTime()}"></span>
+										</p>
+										<p style="margin: 0;">
+											<strong>Driver:</strong> <span th:text="${book.getTrip().getDriver().getUsername()}"></span>
+										</p>
+									</td>
+								</tr>
+							</table> <!-- Illustration -->
+							<div style="text-align: center; margin: 24px 0;">
+								<img src="./email.png" alt="Trip Confirmed Illustration"
+									width="320" style="max-width: 100%; border-radius: 10px;">
+							</div>
+
+							<p style="font-size: 15px; line-height: 1.6; margin: 0 0 22px;">
+								May your ride be smooth and timely. Should you need assistance,
+								our support team remains available — attentive, dependable, and
+								ready.</p> <!-- CTA -->
+							<table cellpadding="0" cellspacing="0" role="presentation"
+								align="center" style="margin: 30px auto;">
+								<tr>
+									<td style="background-color: #0a66c2; border-radius: 6px;">
+										<a href="" target="_blank"
+										style="display: inline-block; padding: 14px 32px; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: bold;">
+											Login to Chaloo </a>
+									</td>
+								</tr>
+							</table>
+
+							<p style="font-size: 14px; color: #555555; margin: 0;">
+								With warm regards,<br> <strong>Team Chaloo</strong>
+							</p>
+
+						</td>
+					</tr>
+
+					<!-- Footer -->
+					<tr>
+						<td
+							style="background-color: #f1f1f1; padding: 20px; text-align: center; font-size: 12px; color: #666666;">
+							<p style="margin: 0 0 8px;">
+								<strong>Chaloo Ride Sharing Platform</strong><br> Built on
+								trust. Driven by responsibility.
+							</p>
+							<p style="margin: 0;">🌐 www.chalooride.com | 📧
+								support@chalooride.com</p>
+							<p style="margin: 10px 0 0; font-size: 11px; color: #999999;">
+								© <span th:text="${book.getDate().getDayOfYear()}"></span> Chaloo. All rights
+								reserved.
+							</p>
+						</td>
+					</tr>
+
+				</table> <!-- End Container -->
+
+			</td> ```
+
+		</tr>
+	</table>
+
+</body>
+</html>
