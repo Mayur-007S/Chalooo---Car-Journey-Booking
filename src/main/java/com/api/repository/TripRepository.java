@@ -10,9 +10,12 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.api.model.Booking;
 import com.api.model.Trip;
 
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
+
 
 public interface TripRepository extends JpaRepository<Trip, Long>, JpaSpecificationExecutor<Trip>{
 
@@ -56,6 +59,11 @@ public interface TripRepository extends JpaRepository<Trip, Long>, JpaSpecificat
 			+ "WHERE b.trip_id=:tripId)", nativeQuery = true)
 	int deleteTripIfNoBookings(@Param("tripId") long tripId);
 	
+	List<Trip> findByStartDateTimeAfter(LocalDateTime startDateTime);
 	
-	
+	@Query(value = "SELECT * "
+			+ "FROM chaloo_db.trips "
+			+ "WHERE start_date_time BETWEEN NOW() "
+			+ "AND DATE_ADD(NOW(), interval :time MINUTE)", nativeQuery = true)
+	List<Trip> findByInTimeMinutes(@Param("time") int time); 
 }

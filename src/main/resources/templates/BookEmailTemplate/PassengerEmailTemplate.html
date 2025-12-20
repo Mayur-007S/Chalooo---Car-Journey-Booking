@@ -16,7 +16,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light dark">
 <meta name="supported-color-schemes" content="light dark">
-<title>Trip Confirmed – Chaloo</title>
+<title th:text="${template.get('title')}"></title>
 </head>
 
 <body
@@ -34,10 +34,10 @@
 					<tr>
 						<td
 							style="background-color: #0a66c2; padding: 24px; text-align: center;">
-							<h1 style="margin: 0; font-size: 26px; color: #ffffff;">🚗
-								Chaloo Ride Sharing Platform</h1>
-							<p style="margin: 8px 0 0; font-size: 14px; color: #e6f0ff;">Trip
-								Confirmed & On the Way</p>
+							<h1 th:text="${template.get('mainheading')}" style="margin: 0; font-size: 26px; color: #ffffff;">🚗
+								</h1>
+							<p th:text="${template.get('heading')}" style="margin: 8px 0 0; font-size: 14px; color: #e6f0ff;">Trip
+								</p>
 						</td>
 					</tr>
 
@@ -49,10 +49,7 @@
 								Dear <strong th:text="${book.getPassenger().getUsername()}">User</strong>,
 							</p>
 
-							<p style="font-size: 15px; line-height: 1.6; margin: 0 0 18px;">
-								We are pleased to inform you that your trip has been <strong>successfully
-									confirmed</strong>. At <strong>Chaloo</strong>, every journey is treated
-								with care, responsibility, and trust.
+							<p th:text="${template.get('describtion')}" style="font-size: 15px; line-height: 1.6; margin: 0 0 18px;">
 							</p> <!-- Trip Details -->
 							<table width="100%" cellpadding="0" cellspacing="0"
 								role="presentation"
@@ -87,17 +84,16 @@
 									width="320" style="max-width: 100%; border-radius: 10px;">
 							</div>
 
-							<p style="font-size: 15px; line-height: 1.6; margin: 0 0 22px;">
-								May your ride be smooth and timely. Should you need assistance,
-								our support team remains available — attentive, dependable, and
-								ready.</p> <!-- CTA -->
+							<p th:text="${template.get('footerdescribtion')}" style="font-size: 15px; line-height: 1.6; margin: 0 0 22px;">
+								</p> <!-- CTA -->
+							<p th:text="${template.get('warning')}" style="font-size:14px; color:#b91c1c;"></p>
 							<table cellpadding="0" cellspacing="0" role="presentation"
 								align="center" style="margin: 30px auto;">
 								<tr>
 									<td style="background-color: #0a66c2; border-radius: 6px;">
-										<a href="" target="_blank"
+										<a th:text="${template.get('buttontext')}" href="" target="_blank"
 										style="display: inline-block; padding: 14px 32px; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: bold;">
-											Login to Chaloo </a>
+											</a>
 									</td>
 								</tr>
 							</table>

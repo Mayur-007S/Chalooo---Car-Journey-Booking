@@ -6,9 +6,11 @@ import java.util.Optional;
 import com.api.dto.BookDTO;
 import com.api.model.Booking;
 
+import jakarta.mail.MessagingException;
+
 public interface BookingService {
 
-	Booking addBooking(BookDTO dto);
+	Booking addBooking(BookDTO dto) throws MessagingException;
 	
 	List<Booking> getAll();
 	

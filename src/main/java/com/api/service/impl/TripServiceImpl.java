@@ -1,6 +1,7 @@
 package com.api.service.impl;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -101,8 +102,8 @@ public class TripServiceImpl implements TripService {
 	public List<TripDTO> getALL() {
 		log.info("Inside getall trip method");
 		/* List<Trip> trips = tripRepository.findAll(); */
-		List<Trip> trips = tripRepository.findAll();
-
+		LocalDateTime cutoff = LocalDateTime.now().minusDays(2);
+		List<Trip> trips = tripRepository.findByStartDateTimeAfter(cutoff);
 		if (trips.isEmpty()) {
 			throw new NotFoundException("No Trips Found in database. " + "Please try later.");
 		}

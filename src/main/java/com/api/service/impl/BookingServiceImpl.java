@@ -17,6 +17,7 @@ import com.api.customeexceptions.NotFoundException;
 import com.api.dto.BookDTO;
 
 import com.api.dto.mapper.TripMapper;
+import com.api.mail.service.MailService;
 import com.api.model.Booking;
 
 import com.api.model.Trip;
@@ -28,6 +29,8 @@ import com.api.service.BookingService;
 import com.api.service.TripService;
 import com.api.service.UserService;
 import com.api.validation.ObjectValidator;
+
+import jakarta.mail.MessagingException;
 
 @Service
 public class BookingServiceImpl implements BookingService {
@@ -54,12 +57,15 @@ public class BookingServiceImpl implements BookingService {
 
 	@Autowired
 	private TripMapper mapper;
+	
+	@Autowired
+	private MailService mailService;
 
 	
 	@Transactional(rollbackFor = { IllegalStateException.class, NotFoundException.class })
 	@CachePut(cacheNames = {"bookings", "trips"}, key = "#result.id")
 	@Override
-	public Booking addBooking(BookDTO dto) {
+	public Booking addBooking(BookDTO dto) throws MessagingException {
 		log.info("Inside add booking method");
 		validator.validate(dto);
 
@@ -67,7 +73,7 @@ public class BookingServiceImpl implements BookingService {
 		Trip trip = tripRepository.findById(dto.trip_id())
 				.orElseThrow(() -> new NotFoundException("Trip not found for id: " + dto.trip_id()));
 
-		if (trip.getDepartureDateTime().isBefore(LocalDateTime.now())) {
+		if (trip.getDepartureDateTime() != null && trip.getDepartureDateTime().isBefore(LocalDateTime.now())) {
 	        throw new IllegalStateException("Cannot book past trips");
 	    }
 
@@ -92,7 +98,9 @@ public class BookingServiceImpl implements BookingService {
 		trip.setAvailableSeats(trip.getAvailableSeats() - dto.seatsBooked());
 
 		tripRepository.save(trip);
-
+		
+		sendNotification(book);
+		
 		return repository.save(book);
 	}
 
@@ -116,11 +124,12 @@ public class BookingServiceImpl implements BookingService {
 	}
 
 	@Override
+	@Transactional
 	@CacheEvict(value = "bookings", key = "#book_id")
 	public boolean cancelBooking(long book_id) {
 		log.info("Inside cancel booking method");
 		Booking book = repository.findById(book_id).get();
-		if (book != null) {
+		if (book != null && book.getStatus().equalsIgnoreCase("CONFIRM")) {
 			book.setStatus("CANCEL");
 			repository.save(book);
 			return true;
@@ -132,6 +141,11 @@ public class BookingServiceImpl implements BookingService {
 	public List<Booking> getByTripId(long tripId) {
 		log.info("Inside getByTripId method");
 		return repository.findByTrip(tripId);
+	}
+	
+	public void sendNotification(Booking book) throws MessagingException {
+		mailService.confirmEmailtoPassenger(book.getPassenger().getEmail(), book);
+		mailService.confirmEmailtoDriver(book);
 	}
 
 }

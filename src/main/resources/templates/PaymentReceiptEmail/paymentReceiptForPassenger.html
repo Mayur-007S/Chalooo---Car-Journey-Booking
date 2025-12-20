@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Payment Receipt - Chaloo</title>
+</head>
+
+<body
+	style="margin: 0; padding: 0; background-color: #f4f6f8; font-family: Arial, Helvetica, sans-serif;">
+
+	<table width="100%" cellpadding="0" cellspacing="0"
+		style="padding: 30px 0;">
+		<tr>
+			<td align="center">
+				<!-- Main Container -->
+				<table width="600" cellpadding="0" cellspacing="0"
+					style="background: #ffffff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);">
+
+					<!-- Header -->
+					<tr>
+						<td
+							style="padding: 24px; text-align: center; background: #111827; color: #ffffff;">
+							<h1 style="margin: 0; font-size: 26px;">🚖 Chaloo</h1>
+							<p style="margin: 6px 0 0; font-size: 14px; color: #c7d2fe;">
+								Ride Sharing Platform</p>
+						</td>
+					</tr>
+
+					<!-- Illustration -->
+					<tr>
+						<td style="text-align: center; padding: 20px;"><img
+							src="" alt="Payment Successful"
+							width="260"
+							style="display: block; margin: auto; border-radius: 6px;">
+						</td>
+					</tr>
+
+					<!-- Greeting -->
+					<tr>
+						<td style="padding: 0 32px;">
+							<h2 style="color: #111827; font-size: 20px;">Payment
+								Received Successfully 🎉</h2>
+							<p style="color: #374151; font-size: 15px; line-height: 1.6;">
+								Dear <strong th:text="${receipt.getBooking().getPassenger().getUsername()}">User</strong>,<br>
+								<br> We’re pleased to confirm that your payment has been
+								successfully processed. This receipt serves as an official
+								acknowledgment of your transaction with <strong>Chaloo</strong>.
+							</p>
+						</td>
+					</tr>
+
+					<!-- Receipt Details -->
+					<tr>
+						<td style="padding: 20px 32px;">
+							<table width="100%" cellpadding="0" cellspacing="0"
+								style="border-collapse: collapse; font-size: 14px;">
+
+								<tr>
+									<td style="padding: 8px; color: #6b7280;">Receipt No</td>
+									<td style="padding: 8px; font-weight: bold;"
+										th:text="${receipt.getId()}">CHL-RCPT-001</td>
+								</tr>
+
+								<tr style="background: #f9fafb;">
+									<td style="padding: 8px; color: #6b7280;">Booking ID</td>
+									<td style="padding: 8px;" th:text="${receipt.getBooking().getId()}">12345</td>
+								</tr>
+
+								<tr>
+									<td style="padding: 8px; color: #6b7280;">Transaction ID</td>
+									<td style="padding: 8px;" th:text="${receipt.transactionId}">TXN-001</td>
+								</tr>
+
+								<tr style="background: #f9fafb;">
+									<td style="padding: 8px; color: #6b7280;">Payment Method</td>
+									<td style="padding: 8px;" th:text="${receipt.getMethod()}">UPI</td>
+								</tr>
+
+								<tr>
+									<td style="padding: 8px; color: #6b7280;">Payment Date</td>
+									<td style="padding: 8px;" th:text="${receipt.getDate()}">2025-01-01</td>
+								</tr>
+
+								<tr style="background: #f1f5f9;">
+									<td style="padding: 12px; font-size: 15px; font-weight: bold;">
+										Total Paid</td>
+									<td
+										style="padding: 12px; font-size: 16px; font-weight: bold; color: #16a34a;"
+										th:text="$	receipt.getAmount()}">₹450</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<!-- CTA -->
+					<tr>
+						<td align="center" style="padding: 24px;"><a
+							href=""
+							style="background: #2563eb; color: #ffffff; text-decoration: none; padding: 12px 26px; border-radius: 6px; font-size: 15px; display: inline-block;">
+								View Booking </a></td>
+					</tr>
+
+					<!-- Footer -->
+					<tr>
+						<td
+							style="padding: 20px 32px; background: #f9fafb; font-size: 12px; color: #6b7280;">
+							<p style="margin: 0;">Chaloo is a smart ride-sharing platform
+								designed to make everyday travel reliable, affordable, and
+								transparent.</p>
+							<p style="margin: 8px 0 0;">
+								© <span >2025</span> Chaloo. All rights
+								reserved.
+							</p>
+						</td>
+					</tr>
+
+				</table>
+
+			</td>
+		</tr>
+	</table>
+
+</body>
+</html>

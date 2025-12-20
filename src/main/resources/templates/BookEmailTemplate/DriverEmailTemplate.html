@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Booking Received – Chaloo</title>
+</head>
+
+<body style="margin:0; padding:0; background-color:#f4f6f8; font-family:Arial, Helvetica, sans-serif;">
+
+<table width="100%" cellpadding="0" cellspacing="0" style="padding:20px; background-color:#f4f6f8;">
+  <tr>
+    <td align="center">
+
+      <!-- Main Container -->
+      <table width="600" cellpadding="0" cellspacing="0"
+             style="background:#ffffff; border-radius:10px; overflow:hidden;">
+
+        <!-- Header -->
+        <tr>
+          <td style="background:#0a66c2; padding:24px; text-align:center;">
+            <h1 style="margin:0; color:#ffffff; font-size:26px;">🚘 Chaloo Driver Alert</h1>
+            <p style="margin:6px 0 0; color:#e6f0ff; font-size:14px;">
+              A Passenger Has Booked Your Trip
+            </p>
+          </td>
+        </tr>
+
+        <!-- Body -->
+        <tr>
+          <td style="padding:30px; color:#333333;">
+
+            <p style="font-size:16px; margin:0 0 12px;">
+              Dear <strong th:text="${book.getTrip().getDriver().getUsername()}">Driver</strong>,
+            </p>
+
+            <p style="font-size:15px; line-height:1.6; margin:0 0 18px;">
+              Good news. A passenger has <strong>successfully booked</strong> one of your trips.
+              Please review the booking details below and be prepared accordingly.
+            </p>
+
+            <!-- Booking Details -->
+            <table width="100%" cellpadding="0" cellspacing="0"
+                   style="background:#fafafa; border:1px solid #e6e6e6; border-radius:8px; margin:20px 0;">
+              <tr>
+                <td style="padding:16px; font-size:14px; line-height:1.7;">
+                  <p style="margin:0;"><strong>Booking ID:</strong> <span th:text="${book.getId()}"></span></p>
+                  <p style="margin:0;"><strong>Passenger Name:</strong> <span th:text="${book.getPassenger().getUsername()}"></span></p>
+                  <p style="margin:0;"><strong>Pickup:</strong> <span th:text="${book.getTrip().getSource()}"></span></p>
+                  <p style="margin:0;"><strong>Drop:</strong> <span th:text="${book.getTrip().getDestination()}"></span></p>
+                  <p style="margin:0;"><strong>Date & Time:</strong> 
+		                  <span th:text="${book.getDate()}"></span> 
+		                  <span th:text="${book.getTime()}"></span>
+		          </p>
+                  <p style="margin:0;"><strong>Seats Booked:</strong> <span th:text="${book.getSeatsBooked()}"></span></p>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Illustration -->
+            <div style="text-align:center; margin:24px 0;">
+              <img src="https://assets-global.website-files.com/5e51c674258ffe10d286d30a/5e535cfaed50c3c7b18bca2e_Illustration-driving.png"
+                   alt="Driver Notification"
+                   width="300"
+                   style="max-width:100%; border-radius:10px;">
+            </div>
+
+            <p style="font-size:15px; line-height:1.6;">
+              Please ensure timely arrival and a safe journey.
+              Your professionalism keeps the Chaloo platform moving forward.
+            </p>
+
+            <!-- CTA -->
+            <table align="center" style="margin:30px auto;">
+              <tr>
+                <td style="background:#0a66c2; border-radius:6px;">
+                  <a href=""
+                     style="display:inline-block; padding:14px 32px; color:#ffffff;
+                            text-decoration:none; font-size:15px; font-weight:bold;">
+                    View Booking in Dashboard
+                  </a>
+                </td>
+              </tr>
+            </table>
+
+            <p style="font-size:14px; color:#555;">
+              Regards,<br>
+              <strong>Team Chaloo</strong>
+            </p>
+
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="background:#f1f1f1; padding:20px; text-align:center; font-size:12px; color:#666;">
+            <p style="margin:0;">
+              Chaloo Ride Sharing Platform<br>
+              Built on trust. Driven by drivers like you.
+            </p>
+            <p style="margin:8px 0 0;">📧 support@chalooride.com</p>
+            <p style="margin:10px 0 0; font-size:11px; color:#999;">
+              © <span th:text="${year}"></span> Chaloo. All rights reserved.
+            </p>
+          </td>
+        </tr>
+
+      </table>
+      <!-- End Container -->
+
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>

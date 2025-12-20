@@ -17,8 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.api.customeexceptions.NotFoundException;
 import com.api.dto.PaymentDTO;
+import com.api.dto.mapper.PaymentMapper;
+import com.api.mail.service.MailService;
 import com.api.model.Payment;
 import com.api.service.PaymentService;
+
+import jakarta.mail.MessagingException;
 
 @RestController
 @RequestMapping("api/v1/payment")
@@ -26,16 +30,23 @@ public class PaymentController {
 
 	@Autowired
 	private PaymentService paymentService;
+	
+	@Autowired
+	private MailService mailService;
+	
+	@Autowired
+	private PaymentMapper paymentMapper;
 
 	private Logger log = LoggerFactory.getLogger(PaymentController.class);
 	
 	@PreAuthorize("hasAnyRole('PASSENGER','ADMIN')")
 	@PostMapping("/add")
-	public ResponseEntity<PaymentDTO> addPayment(@RequestBody PaymentDTO paymentDTO)
+	public ResponseEntity<PaymentDTO> addPayment(@RequestBody PaymentDTO paymentDTO) throws MessagingException
 	{
 		log.info("Adding new payment with details: {}", paymentDTO);
 		PaymentDTO payment = paymentService.addPayment(paymentDTO);
 		if(payment != null) {
+			/* mailService.sendPaymentReceiptToPassengerEmail(payment); */
 			return ResponseEntity.ok(payment);
 		}
 		throw new NotFoundException("Failed to add payment with the provided details.");
