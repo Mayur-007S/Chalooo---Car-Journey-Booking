@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.CacheEvict;
@@ -45,6 +46,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Autowired
 	private ObjectValidator<ReviewDTO> validator;
 
+	@Transactional(rollbackFor = { NotFoundException.class, NullPointerException.class })
 	@Override
 	@CachePut(value = "reviews", key = "#result.id")
 	public Review addReviews(ReviewDTO reviewdto) {
@@ -98,6 +100,7 @@ public class ReviewServiceImpl implements ReviewService {
 		return repository.findByTripId(tripId);
 	}
 
+	@Transactional(rollbackFor = { NotFoundException.class })
 	@Override
 	@CacheEvict(value = "reviews", key = "#reviewId")
 	public void deleteReview(long reviewId) {
@@ -113,6 +116,7 @@ public class ReviewServiceImpl implements ReviewService {
 		}
 	}
 
+	@Transactional(rollbackFor = { NotFoundException.class, NullPointerException.class })
 	@Override
 	@CacheEvict(value = "reviews", key = "#reviewId")
 	public void deleteOwnReview(long reviewId, long userId) {

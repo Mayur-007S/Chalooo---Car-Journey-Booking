@@ -6,10 +6,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CachePut;
 
 import com.api.customeexceptions.NotFoundException;
+import com.api.customeexceptions.ObjectNotValidateException;
 import com.api.dto.PaymentDTO;
 import com.api.dto.mapper.PaymentMapper;
 import com.api.model.Payment;
@@ -31,6 +33,7 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired
 	private PaymentMapper paymentMapper;
 
+	@Transactional(rollbackFor = { ObjectNotValidateException.class })
 	@Override
 	@CachePut(value = "payments", key = "#result.id")
 	public PaymentDTO addPayment(PaymentDTO paymentdto) {

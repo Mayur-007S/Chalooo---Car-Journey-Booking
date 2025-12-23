@@ -18,10 +18,12 @@ import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.CacheEvict;
 import com.api.customeexceptions.NotFoundException;
+import com.api.customeexceptions.ObjectNotValidateException;
 import com.api.dto.TripDTO;
 import com.api.dto.mapper.TripMapper;
 import com.api.model.Trip;
@@ -52,6 +54,7 @@ public class TripServiceImpl implements TripService {
 	private Logger log = LoggerFactory.getLogger(TripServiceImpl.class);
 
 	@Override
+	@Transactional(rollbackFor = { ObjectNotValidateException.class, NullPointerException.class })
 	public TripDTO addTrip(TripDTO dto) {
 		log.info("Inside add trip method");
 		Trip trip = tripMapper.tripDTOtoTrip(dto);
@@ -60,7 +63,9 @@ public class TripServiceImpl implements TripService {
 		return tripMapper.tripToTripDto(trip2);
 	}
 
+	
 	@Override
+	@Transactional(rollbackFor = { ObjectNotValidateException.class, NullPointerException.class })
 	@CachePut(value = "trips", key = "#tid")
 	public TripDTO updateTrip(long tid, TripDTO dto) {
 		log.info("Inside update trip method");
@@ -78,6 +83,7 @@ public class TripServiceImpl implements TripService {
 	}
 
 	@Override
+	@Transactional(rollbackFor = { ObjectNotValidateException.class, NullPointerException.class })
 	public TripDTO updateOwnTrip(long tripid, long driverId, TripDTO tripdto) {
 		log.info("Inside update trip method");
 		validator.validate(tripdto);
@@ -178,6 +184,7 @@ public class TripServiceImpl implements TripService {
 	}
 
 	@Override
+	@Transactional(rollbackFor = { NullPointerException.class })
 	@CacheEvict(value = "trips", key = "#tripId")
 	public boolean deleteTrip(long tripId) {
 		log.info("Inside CancelTrip method");
@@ -192,6 +199,8 @@ public class TripServiceImpl implements TripService {
 	}
 
 	@Override
+	@Transactional(rollbackFor = { NullPointerException.class })
+	@CacheEvict(value = "trips", key = "#tripId")
 	public boolean deleteOwnTrip(long driverId, long tripId) {
 		log.info("Inside deleteOwnTrip method");
 

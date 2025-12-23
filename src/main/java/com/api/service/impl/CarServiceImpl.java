@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.CacheEvict;
@@ -36,6 +37,7 @@ public class CarServiceImpl implements CarService {
 
 	private Logger log = LoggerFactory.getLogger(CarServiceImpl.class);
 
+	@Transactional(rollbackFor = { NotFoundException.class })
 	@Override
 	public Car addCar(CarDTO cardto) {
 		log.info("Inside add car method");
@@ -67,6 +69,7 @@ public class CarServiceImpl implements CarService {
 				.toList();
 	}
 
+	@Transactional(rollbackFor = { NotFoundException.class })
 	@Override
 	@CachePut(value = "cars", key = "#cid")
 	public Car updateCar(long cid, CarDTO cardto) {
@@ -89,6 +92,7 @@ public class CarServiceImpl implements CarService {
 		return repository.save(car1);
 	}
 
+	@Transactional(rollbackFor = { NotFoundException.class })
 	@Override
 	@CacheEvict(value = "cars", key = "#cid")
 	public void deleteCarByOwner(String username, long cid) {

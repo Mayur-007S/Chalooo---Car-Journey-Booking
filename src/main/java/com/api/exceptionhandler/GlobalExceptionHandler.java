@@ -9,6 +9,7 @@ import org.springframework.web.client.HttpServerErrorException.InternalServerErr
 import com.api.customeexceptions.BookingCanceletionException;
 import com.api.customeexceptions.BookingCreationException;
 import com.api.customeexceptions.ErrorResponse;
+import com.api.customeexceptions.MailExceptions;
 import com.api.customeexceptions.NotFoundException;
 import com.api.customeexceptions.ObjectNotValidateException;
 
@@ -61,6 +62,12 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(IllegalStateException.class)
 	public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException e){
 		ErrorResponse errorResponse = new ErrorResponse("Illegal State Exception", e.getMessage());
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+	}
+	
+	@ExceptionHandler(MailExceptions.class)
+	public ResponseEntity<ErrorResponse> handlMailExceptions(MailExceptions e){
+		ErrorResponse errorResponse = new ErrorResponse("Mail Exceptions", e.getMessage());
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
 	}
 	
