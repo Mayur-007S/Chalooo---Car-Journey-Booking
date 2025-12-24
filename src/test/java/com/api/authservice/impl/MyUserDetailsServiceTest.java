@@ -37,23 +37,20 @@ class MyUserDetailsServiceTest {
 	void testLoadUserByUsername() {
 		User user = new User(Long.parseLong("17"), "mayurmyanan111@.com",
 				"$2a$12$3h/hUjs2ww5oZEqo0rh8I.A/L9hTauCn2wNJCRfeX95MH7.yQ4Xae", "mayur", "9011781933", "ROLE_ADMIN");
-		
+
 		when(repository.findByUsername(ArgumentMatchers.anyString())).thenReturn(user);
 		UserDetails userDetails = detailsService.loadUserByUsername("mayur");
 
-		
-		 assertNotNull(userDetails); 
-		 assertEquals(userDetails.getUsername(),user.getUsername());
-		 
+		assertNotNull(userDetails);
+		assertEquals(userDetails.getUsername(), user.getUsername());
+
 	}
-	
+
 	@Test
 	void testLoadUserByUsernameThrowsException() {
-		
-		when(repository.findByUsername(ArgumentMatchers.anyString())).thenReturn(null);
-		UserDetails userDetails = detailsService.loadUserByUsername("mayur");
 
-		assertNotNull(userDetails);
+		when(repository.findByUsername(ArgumentMatchers.anyString())).thenReturn(null);
+
 		assertThrows(UsernameNotFoundException.class, () -> {
 			detailsService.loadUserByUsername("mayur");
 		});
