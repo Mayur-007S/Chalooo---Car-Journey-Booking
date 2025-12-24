@@ -66,15 +66,15 @@ public class MailServiceImpl implements MailService {
 					      The Chaloo Team
 							""";
 
-			context.replace("{username}", username);
+			context = context.replace("{username}", username);
 			log.info("Email has sended succefully. {}", to);
 
 			helper.setText(context, true);
 
 			javaMailSender.send(message);
 
-		} catch (MailExceptions ex) {
-			log.error("Failed to send login email to {}: {}", ex);
+		} catch (Exception ex) {
+			log.error("Failed to send login email to {}: {}", to, ex.getMessage());
 		}
 	}
 
@@ -109,9 +109,9 @@ public class MailServiceImpl implements MailService {
 			log.info("Email has sent to Passenger: {}", passenger_email);
 			javaMailSender.send(message);
 
-		} catch (MailExceptions ex) {
-			 log.error("Failed to send confirm booking email to {}: {}",
-	                    book.getPassenger().getEmail(), ex.getMessage(), ex);
+		} catch (Exception ex) {
+			log.error("Failed to send confirm booking email to {}: {}",
+					passenger_email, ex.getMessage());
 		}
 	}
 
@@ -134,9 +134,9 @@ public class MailServiceImpl implements MailService {
 			log.info("Email has sent to Driver: {}", driver_email);
 			javaMailSender.send(message);
 
-		} catch (MailExceptions ex) {
-			 log.error("Failed to send confirm booking email to {}: {}",
-	                    book.getTrip().getDriver().getEmail(), ex.getMessage(), ex);
+		} catch (Exception ex) {
+			log.error("Failed to send confirm booking email to {}: {}",
+					book.getTrip().getDriver().getEmail(), ex.getMessage());
 		}
 	}
 
@@ -172,9 +172,9 @@ public class MailServiceImpl implements MailService {
 			log.info("Email has sent to Driver: {}", driver_email);
 			javaMailSender.send(message);
 
-		} catch (MailExceptions ex) {
-			 log.error("Failed to send trip reminder email to {}: {}",
-	                    trip.getDriver().getEmail(), ex.getMessage(), ex);
+		} catch (Exception ex) {
+			log.error("Failed to send trip reminder email to {}: {}",
+					trip.getDriver().getEmail(), ex.getMessage());
 		}
 	}
 
@@ -210,9 +210,9 @@ public class MailServiceImpl implements MailService {
 			log.info("Email has sent to Driver: {}", driver_email);
 			javaMailSender.send(message);
 
-		} catch (MailExceptions ex) {
-			 log.error("Failed to send booked trip reminder email to {}: {}",
-	                    booking.getPassenger().getEmail(), ex.getMessage(), ex);
+		} catch (Exception ex) {
+			log.error("Failed to send booked trip reminder email to {}: {}",
+					booking.getPassenger().getEmail(), ex.getMessage());
 		}
 
 	}
@@ -238,9 +238,9 @@ public class MailServiceImpl implements MailService {
 			log.info("Email has sent to Passengers: {}", email);
 			javaMailSender.send(message);
 
-		} catch (MailExceptions ex) {
-			 log.error("Failed to send payment receipt email to {}: {}",
-	                   receipt.getBooking().getPassenger().getEmail(), ex.getMessage(), ex);
+		} catch (Exception ex) {
+			log.error("Failed to send payment receipt email to {}: {}",
+					receipt.getBooking().getPassenger().getEmail(), ex.getMessage());
 		}
 	}
 
@@ -264,9 +264,9 @@ public class MailServiceImpl implements MailService {
 			helper.setText(html, true);
 			log.info("Email has sent to Passengers: {}", email);
 			javaMailSender.send(message);
-		} catch (MailExceptions ex) {
-			 log.error("Failed to send cancel booking email to {}: {}",
-	                    booking.getPassenger().getEmail(), ex.getMessage(), ex);
+		} catch (Exception ex) {
+			log.error("Failed to send cancel booking email to {}: {}",
+					booking.getPassenger().getEmail(), ex.getMessage());
 		}
 	}
 
@@ -291,9 +291,9 @@ public class MailServiceImpl implements MailService {
 			log.info("Email has sent to Driver: {}", email);
 			javaMailSender.send(message);
 
-		} catch (MailExceptions ex) {
-			 log.error("Failed to send cancel booking email to {}: {}",
-	                    booking.getTrip().getDriver().getEmail(), ex.getMessage(), ex);
+		} catch (Exception ex) {
+			log.error("Failed to send cancel booking email to {}: {}",
+					booking.getTrip().getDriver().getEmail(), ex.getMessage());
 		}
 	}
 

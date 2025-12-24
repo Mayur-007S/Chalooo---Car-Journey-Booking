@@ -29,7 +29,7 @@ public class SecurityConfig {
 
 	@Autowired
 	private UserDetailsService userDetailsService;
-	
+
 	@Autowired
 	private JwtFilter jwtFilter;
 
@@ -42,35 +42,27 @@ public class SecurityConfig {
 	public SecurityFilterChain setcurityFilterChain(HttpSecurity http) throws Exception {
 		return http.csrf(Customizer -> Customizer.disable())
 				// This is used to disable csrf
-				.authorizeHttpRequests(request -> 
-			    request
-			        .requestMatchers("/api/v1/user/register", "/api/v1/user/login").permitAll()
-						/*
-						 * .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-						 * .requestMatchers("/api/v1/driver/**").hasAnyRole("DRIVER","ADMIN")
-						 * .requestMatchers("/api/v1/passenger/**").hasAnyRole("PASSENGER","ADMIN")
-						 * .requestMatchers("/api/v1/pad**").hasAnyRole("PASSENGER","ADMIN","DRIVER")
-						 */
-			        .anyRequest().authenticated()
-				)
+				.authorizeHttpRequests(request -> request
+						.requestMatchers("/api/v1/user/register", "/api/v1/user/login").permitAll()
+						.requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+						.anyRequest().authenticated()) // This is used to configure which endpoints are secured and
+														// which are not
 
-//				.formLogin(Customizer.withDefaults()) 
+				// .formLogin(Customizer.withDefaults())
 				.httpBasic(Customizer.withDefaults())
 				// This is used to enable form login
-				.sessionManagement(session -> 
-				 session // We can configure session management here 
-					.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-					.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-					.build();
+				.sessionManagement(session -> session // We can configure session management here
+						.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+				.build();
 	}
 
-	
 	// This is used to authenticate user with database
 	// We need to create a class that implements UserDetailsService
 	// And override loadUserByUsername method
 	@Bean
 	public AuthenticationProvider authenticationProvider() {
-		DaoAuthenticationProvider provider = new DaoAuthenticationProvider(); 
+		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 		provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
 		provider.setUserDetailsService(userDetailsService);
 		return provider;
@@ -79,7 +71,7 @@ public class SecurityConfig {
 	// This is used to authenticate user with in-memory authentication
 	// We can create users and roles here
 	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) 
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
 			throws Exception {
 		return config.getAuthenticationManager();
 	}

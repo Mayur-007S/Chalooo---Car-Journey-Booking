@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,7 +34,7 @@
         .header h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .header p {
@@ -53,13 +54,13 @@
             background: white;
             border-radius: 15px;
             padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
         }
 
         .stat-card .icon {
@@ -83,7 +84,7 @@
             border-radius: 15px;
             padding: 30px;
             margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             animation: fadeInUp 0.8s ease-out;
         }
 
@@ -113,7 +114,7 @@
 
         .test-card:hover {
             transform: translateX(5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
         .test-card.success {
@@ -177,7 +178,7 @@
         .test-details {
             margin-top: 15px;
             padding-top: 15px;
-            border-top: 1px solid rgba(0,0,0,0.1);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
         }
 
         .test-details ul {
@@ -217,7 +218,7 @@
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         .bug-item h4 {
@@ -256,7 +257,7 @@
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
         .btn-primary {
@@ -298,6 +299,7 @@
                 opacity: 0;
                 transform: translateY(-20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -309,6 +311,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -320,7 +323,7 @@
             border-radius: 15px;
             padding: 25px;
             margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
         .progress-bar {
@@ -388,6 +391,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -398,29 +402,30 @@
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="icon">📨</div>
-                <h3>8</h3>
+                <h3 th:text="${totalEmailTypes}">8</h3>
                 <p>Email Types</p>
             </div>
             <div class="stat-card">
                 <div class="icon">✅</div>
-                <h3>12</h3>
+                <h3 th:text="${totalUnitTests}">12</h3>
                 <p>Unit Tests</p>
             </div>
             <div class="stat-card">
                 <div class="icon">🧪</div>
-                <h3>9</h3>
+                <h3 th:text="${totalIntegrationTests}">9</h3>
                 <p>Integration Tests</p>
             </div>
             <div class="stat-card">
                 <div class="icon">⚠️</div>
-                <h3>3</h3>
+                <h3 th:text="${totalBugs}">3</h3>
                 <p>Bugs Found</p>
             </div>
         </div>
 
         <div class="progress-section">
             <h2 style="color: #667eea; margin-bottom: 15px;">Testing Coverage</h2>
-            <p style="color: #6b7280; margin-bottom: 10px;">All 8 email notification types have comprehensive test coverage</p>
+            <p style="color: #6b7280; margin-bottom: 10px;">All 8 email notification types have comprehensive test
+                coverage</p>
             <div class="progress-bar">
                 <div class="progress-fill" style="width: 100%">100% Coverage</div>
             </div>
@@ -428,7 +433,7 @@
 
         <div class="bug-section">
             <h2>🐛 Critical Issues Found</h2>
-            
+
             <div class="bug-item">
                 <h4>Bug #1: Payment Receipt Email Not Sent</h4>
                 <p><strong>Location:</strong> <code>PaymentController.java:49</code></p>
@@ -456,155 +461,18 @@
 
         <div class="test-section">
             <h2>🧪 Email Notification Test Cases</h2>
-            
+
             <div class="test-grid">
-                <div class="test-card success">
+                <div class="test-card" th:each="testCase : ${testCases}" th:classappend="${testCase.status}">
                     <div class="test-card-header">
-                        <h3>1. Welcome Email (Sign In)</h3>
-                        <span class="badge async">Async</span>
+                        <h3 th:text="${testCase.title}">Test Case Title</h3>
+                        <span class="badge" th:text="${testCase.badgeType}"
+                            th:classappend="${#strings.toLowerCase(testCase.badgeType)}">Type</span>
                     </div>
-                    <p>Sent when user signs in to the application</p>
+                    <p th:text="${testCase.description}">Description</p>
                     <div class="test-details">
                         <ul>
-                            <li>Recipient: User email</li>
-                            <li>Template: Plain text</li>
-                            <li>Trigger: User login</li>
-                            <li>Test Status: ✅ Passed</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="test-card success">
-                    <div class="test-card-header">
-                        <h3>2. Welcome Email (Sign Up)</h3>
-                        <span class="badge async">Async</span>
-                    </div>
-                    <p>Sent when new user registers</p>
-                    <div class="test-details">
-                        <ul>
-                            <li>Recipient: New user email</li>
-                            <li>Template: Plain text</li>
-                            <li>Trigger: User registration</li>
-                            <li>Test Status: ✅ Passed</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="test-card success">
-                    <div class="test-card-header">
-                        <h3>3. Booking Confirmation (Passenger)</h3>
-                        <span class="badge template">Template</span>
-                        <span class="badge async">Async</span>
-                    </div>
-                    <p>Booking confirmation sent to passenger</p>
-                    <div class="test-details">
-                        <ul>
-                            <li>Template: PassengerEmailTemplate.html</li>
-                            <li>Includes: Trip details, seats, amount</li>
-                            <li>Trigger: Booking creation</li>
-                            <li>Test Status: ✅ Passed</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="test-card success">
-                    <div class="test-card-header">
-                        <h3>4. Booking Confirmation (Driver)</h3>
-                        <span class="badge template">Template</span>
-                        <span class="badge async">Async</span>
-                    </div>
-                    <p>Booking notification sent to driver</p>
-                    <div class="test-details">
-                        <ul>
-                            <li>Template: DriverEmailTemplate.html</li>
-                            <li>Includes: Passenger details, seats</li>
-                            <li>Trigger: Booking creation</li>
-                            <li>Test Status: ✅ Passed</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="test-card success">
-                    <div class="test-card-header">
-                        <h3>5. Trip Reminder (Driver)</h3>
-                        <span class="badge template">Template</span>
-                        <span class="badge scheduled">Scheduled</span>
-                    </div>
-                    <p>Reminder sent 30 minutes before trip</p>
-                    <div class="test-details">
-                        <ul>
-                            <li>Template: ReminderForDriver.html</li>
-                            <li>Schedule: @Scheduled cron job</li>
-                            <li>Trigger: 30 min before trip</li>
-                            <li>Test Status: ✅ Passed</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="test-card success">
-                    <div class="test-card-header">
-                        <h3>6. Trip Reminder (Passenger)</h3>
-                        <span class="badge template">Template</span>
-                        <span class="badge scheduled">Scheduled</span>
-                    </div>
-                    <p>Reminder sent 30 minutes before trip</p>
-                    <div class="test-details">
-                        <ul>
-                            <li>Template: PassengerEmailTemplate.html</li>
-                            <li>Schedule: @Scheduled cron job</li>
-                            <li>Trigger: 30 min before trip</li>
-                            <li>Test Status: ✅ Passed</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="test-card warning">
-                    <div class="test-card-header">
-                        <h3>7. Payment Receipt</h3>
-                        <span class="badge template">Template</span>
-                        <span class="badge async">Async</span>
-                    </div>
-                    <p>Payment confirmation receipt</p>
-                    <div class="test-details">
-                        <ul>
-                            <li>Template: paymentReceiptForPassenger.html</li>
-                            <li>Includes: Transaction ID, amount</li>
-                            <li>⚠️ Currently commented out!</li>
-                            <li>Test Status: ⚠️ Needs Fix</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="test-card success">
-                    <div class="test-card-header">
-                        <h3>8. Cancellation (Passenger)</h3>
-                        <span class="badge template">Template</span>
-                        <span class="badge async">Async</span>
-                    </div>
-                    <p>Booking cancellation notification</p>
-                    <div class="test-details">
-                        <ul>
-                            <li>Template: cancelTripBookingforPassenger.html</li>
-                            <li>Includes: Refund info</li>
-                            <li>Trigger: Booking cancellation</li>
-                            <li>Test Status: ✅ Passed</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="test-card error">
-                    <div class="test-card-header">
-                        <h3>9. Cancellation (Driver)</h3>
-                        <span class="badge template">Template</span>
-                        <span class="badge async">Async</span>
-                    </div>
-                    <p>Booking cancellation notification</p>
-                    <div class="test-details">
-                        <ul>
-                            <li>Template: cancelTripBookingForDriver.html</li>
-                            <li>❌ Bug: Sends to wrong email!</li>
-                            <li>Trigger: Booking cancellation</li>
-                            <li>Test Status: ❌ Critical Bug</li>
+                            <li th:each="detail : ${testCase.details}" th:text="${detail}">Detail</li>
                         </ul>
                     </div>
                 </div>
@@ -613,7 +481,7 @@
 
         <div class="test-section">
             <h2>🚀 Quick Start - Run Tests</h2>
-            
+
             <div class="timeline">
                 <div class="timeline-item">
                     <h4>Step 1: Run Unit Tests</h4>
@@ -653,10 +521,12 @@ set EMAIL_PASSWORD=your-app-password</code>
                 <button class="btn btn-primary" onclick="copyCommand('mvn test -Dtest=EmailNotificationE2ETest')">
                     📋 Copy Unit Test Command
                 </button>
-                <button class="btn btn-success" onclick="copyCommand('mvn test -Dtest=EmailNotificationIntegrationTest')">
+                <button class="btn btn-success"
+                    onclick="copyCommand('mvn test -Dtest=EmailNotificationIntegrationTest')">
                     📋 Copy Integration Test Command
                 </button>
-                <button class="btn btn-warning" onclick="alert('Please fix the 3 identified bugs before running in production!')">
+                <button class="btn btn-warning"
+                    onclick="alert('Please fix the 3 identified bugs before running in production!')">
                     ⚠️ View Bug Fixes
                 </button>
                 <button class="btn btn-info" onclick="window.open('EMAIL_TESTING_REPORT.md', '_blank')">
@@ -683,56 +553,64 @@ set EMAIL_PASSWORD=your-app-password</code>
                         <td style="padding: 10px; text-align: center;">✅</td>
                         <td style="padding: 10px; text-align: center;">✅</td>
                         <td style="padding: 10px; text-align: center;">✅</td>
-                        <td style="padding: 10px; text-align: center;"><span style="color: #10b981; font-weight: bold;">Ready</span></td>
+                        <td style="padding: 10px; text-align: center;"><span
+                                style="color: #10b981; font-weight: bold;">Ready</span></td>
                     </tr>
                     <tr>
                         <td style="padding: 10px;">Passenger Booking Confirmation</td>
                         <td style="padding: 10px; text-align: center;">✅</td>
                         <td style="padding: 10px; text-align: center;">✅</td>
                         <td style="padding: 10px; text-align: center;">✅</td>
-                        <td style="padding: 10px; text-align: center;"><span style="color: #10b981; font-weight: bold;">Ready</span></td>
+                        <td style="padding: 10px; text-align: center;"><span
+                                style="color: #10b981; font-weight: bold;">Ready</span></td>
                     </tr>
                     <tr style="background: #f9fafb;">
                         <td style="padding: 10px;">Driver Booking Confirmation</td>
                         <td style="padding: 10px; text-align: center;">✅</td>
                         <td style="padding: 10px; text-align: center;">✅</td>
                         <td style="padding: 10px; text-align: center;">✅</td>
-                        <td style="padding: 10px; text-align: center;"><span style="color: #10b981; font-weight: bold;">Ready</span></td>
+                        <td style="padding: 10px; text-align: center;"><span
+                                style="color: #10b981; font-weight: bold;">Ready</span></td>
                     </tr>
                     <tr>
                         <td style="padding: 10px;">Driver Trip Reminder</td>
                         <td style="padding: 10px; text-align: center;">✅</td>
                         <td style="padding: 10px; text-align: center;">✅</td>
                         <td style="padding: 10px; text-align: center;">✅</td>
-                        <td style="padding: 10px; text-align: center;"><span style="color: #10b981; font-weight: bold;">Ready</span></td>
+                        <td style="padding: 10px; text-align: center;"><span
+                                style="color: #10b981; font-weight: bold;">Ready</span></td>
                     </tr>
                     <tr style="background: #f9fafb;">
                         <td style="padding: 10px;">Passenger Trip Reminder</td>
                         <td style="padding: 10px; text-align: center;">✅</td>
                         <td style="padding: 10px; text-align: center;">✅</td>
                         <td style="padding: 10px; text-align: center;">✅</td>
-                        <td style="padding: 10px; text-align: center;"><span style="color: #10b981; font-weight: bold;">Ready</span></td>
+                        <td style="padding: 10px; text-align: center;"><span
+                                style="color: #10b981; font-weight: bold;">Ready</span></td>
                     </tr>
                     <tr>
                         <td style="padding: 10px;">Payment Receipt</td>
                         <td style="padding: 10px; text-align: center;">✅</td>
                         <td style="padding: 10px; text-align: center;">✅</td>
                         <td style="padding: 10px; text-align: center;">✅</td>
-                        <td style="padding: 10px; text-align: center;"><span style="color: #f59e0b; font-weight: bold;">⚠️ Fix Needed</span></td>
+                        <td style="padding: 10px; text-align: center;"><span
+                                style="color: #f59e0b; font-weight: bold;">⚠️ Fix Needed</span></td>
                     </tr>
                     <tr style="background: #f9fafb;">
                         <td style="padding: 10px;">Passenger Cancellation</td>
                         <td style="padding: 10px; text-align: center;">✅</td>
                         <td style="padding: 10px; text-align: center;">✅</td>
                         <td style="padding: 10px; text-align: center;">✅</td>
-                        <td style="padding: 10px; text-align: center;"><span style="color: #10b981; font-weight: bold;">Ready</span></td>
+                        <td style="padding: 10px; text-align: center;"><span
+                                style="color: #10b981; font-weight: bold;">Ready</span></td>
                     </tr>
                     <tr>
                         <td style="padding: 10px;">Driver Cancellation</td>
                         <td style="padding: 10px; text-align: center;">✅</td>
                         <td style="padding: 10px; text-align: center;">✅</td>
                         <td style="padding: 10px; text-align: center;">✅</td>
-                        <td style="padding: 10px; text-align: center;"><span style="color: #ef4444; font-weight: bold;">❌ Critical Bug</span></td>
+                        <td style="padding: 10px; text-align: center;"><span
+                                style="color: #ef4444; font-weight: bold;">❌ Critical Bug</span></td>
                     </tr>
                 </tbody>
             </table>
@@ -747,9 +625,9 @@ set EMAIL_PASSWORD=your-app-password</code>
         }
 
         // Add smooth scroll animations
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const cards = document.querySelectorAll('.test-card');
-            
+
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -768,4 +646,5 @@ set EMAIL_PASSWORD=your-app-password</code>
         });
     </script>
 </body>
+
 </html>

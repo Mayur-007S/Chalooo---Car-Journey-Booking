@@ -18,16 +18,15 @@ public class MyUserDetailsService implements UserDetailsService {
 
 	@Autowired
 	private UserRepository repository;
-	
+
 	private Logger logger = LoggerFactory.getLogger(MyUserDetailsService.class);
-	
+
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		logger.info("Attempting to load user by username: " + username);
 		User user = repository.findByUsername(username);
-		if(user == null) 
-		{
-			logger.info("User Not found : " + user.getUsername());
+		if (user == null) {
+			logger.info("User Not found : " + username);
 			throw new UsernameNotFoundException("User not found");
 		}
 		logger.info("Exit loadUserByUsername with user: " + user.getUsername());

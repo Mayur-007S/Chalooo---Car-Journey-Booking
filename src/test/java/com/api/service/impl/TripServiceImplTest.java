@@ -41,26 +41,25 @@ class TripServiceImplTest {
 
 	@Test
 	void testGetOneTrip() {
-		Trip trip = new Trip("Pune", "Ahilyanagar", 
+		Trip trip = new Trip("Pune", "Ahilyanagar",
 				LocalDateTime.now(), LocalDateTime.now(), 8, 6);
 
 		TripDTO tripDTO = new TripDTO(
-				id, 
-				"Pune", 
-				"Ahilyanagar", 
-				LocalDateTime.now(), 
-				LocalDateTime.now(), 
+				id,
+				"Pune",
+				"Ahilyanagar",
+				LocalDateTime.now(),
+				LocalDateTime.now(),
 				8, 7,
 				driver_id, car_id);
 
-		when(tripRepository.findById(1)).thenReturn(Optional.of(trip));
+		when(tripRepository.findById(1L)).thenReturn(Optional.of(trip));
 		when(tripMapper.tripToTripDto(trip)).thenReturn(tripDTO);
 
 		TripDTO result = tripService.getOneTrip(1);
 
-		verify(tripRepository).findById(1);
+		verify(tripRepository).findById(1L);
 		verify(tripMapper).tripToTripDto(trip);
 	}
 
-	 
 }

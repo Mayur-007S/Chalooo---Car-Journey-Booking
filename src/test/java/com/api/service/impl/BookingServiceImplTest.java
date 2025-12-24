@@ -21,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.api.dto.BookDTO;
 import com.api.dto.mapper.BookingMapper;
+import com.api.dto.mapper.TripMapper;
 import com.api.mail.service.MailService;
 import com.api.model.Booking;
 import com.api.model.Car;
@@ -30,6 +31,8 @@ import com.api.repository.BookingRepository;
 import com.api.repository.CarRepository;
 import com.api.repository.TripRepository;
 import com.api.repository.UserRepository;
+import com.api.service.TripService;
+import com.api.service.UserService;
 import com.api.validation.ObjectValidator;
 
 import jakarta.mail.MessagingException;
@@ -37,94 +40,102 @@ import jakarta.mail.MessagingException;
 @ExtendWith(MockitoExtension.class)
 class BookingServiceImplTest {
 
-    @InjectMocks
-    private BookingServiceImpl bookingService;
+        @InjectMocks
+        private BookingServiceImpl bookingService;
 
-    @Mock
-    private BookingRepository bookingRepository;
+        @Mock
+        private BookingRepository bookingRepository;
 
-    @Mock
-    private TripRepository tripRepository;
+        @Mock
+        private TripRepository tripRepository;
 
-    @Mock
-    private UserRepository userRepository;
+        @Mock
+        private UserRepository userRepository;
 
-    @Mock
-    private CarRepository carRepository;
+        @Mock
+        private CarRepository carRepository;
 
-    @Mock
-    private MailService mailService; // ✅ MOCK, not impl
+        @Mock
+        private MailService mailService; // ✅ MOCK, not impl
 
-    // If BookingMapper is stateless, just create it
-    private BookingMapper bookingMapper = new BookingMapper();
-    
-    @Mock
-    private ObjectValidator<Booking> validator; // ✅ FIX
+        // If BookingMapper is stateless, just create it
+        private BookingMapper bookingMapper = new BookingMapper();
 
-    @BeforeEach
-    void setUp() {
-   
-    }
+        @Mock
+        private ObjectValidator<Object> validator;
 
-    @Test
-    void addBookingTest() throws MessagingException {
-        long passengerId = 1;
-        long driverId = 15;
-        long tripId = 152;
-        long carId = 124;
+        @Mock
+        private UserService userService;
 
-        User passenger = new User();
-        passenger.setId(passengerId);
-        passenger.setEmail("passenger@gmail.com");
+        @Mock
+        private TripService tripService;
 
-        User driver = new User();
-        driver.setId(driverId);
-        driver.setEmail("driver@gmail.com");
+        @Mock
+        private TripMapper mapper;
 
-        Car car = new Car();
-        car.setId(carId);
-        car.setOwner(driver);
-        car.setSeats(8);
+        @BeforeEach
+        void setUp() {
 
-        Trip trip = new Trip();
-        trip.setId(tripId);
-        trip.setAvailableSeats(6);
-        trip.setCar(car);
-        trip.setDriver(driver);
-        trip.setStartDateTime(LocalDateTime.now().plusHours(1));
+        }
 
-        Booking booking = new Booking();
-        booking.setId(12L);
-        booking.setPassenger(passenger);
-        booking.setTrip(trip);
+        @Test
+        void addBookingTest() throws MessagingException {
+                long passengerId = 1;
+                long driverId = 15;
+                long tripId = 152;
+                long carId = 124;
 
-        when(userRepository.findById(passengerId))
-                .thenReturn(Optional.of(passenger));
-        when(tripRepository.findById(ArgumentMatchers.anyLong()))
-        .thenReturn(Optional.of(trip));
-        when(bookingRepository.save(ArgumentMatchers.any(Booking.class)))
-                .thenReturn(booking);
+                User passenger = new User();
+                passenger.setId(passengerId);
+                passenger.setEmail("passenger@gmail.com");
 
-        BookDTO bookDTO = new BookDTO(
-                152,
-                11,
-                1,
-                LocalDate.now(),
-                LocalTime.now(),
-                "CONFIRM"
-        );
+                User driver = new User();
+                driver.setId(driverId);
+                driver.setEmail("driver@gmail.com");
 
-        doNothing().when(validator).validate(ArgumentMatchers.any());
-        
-        Booking result = bookingService.addBooking(bookDTO);
+                Car car = new Car();
+                car.setId(carId);
+                car.setOwner(driver);
+                car.setSeats(8);
 
-//        assertNotNull(result);
+                Trip trip = new Trip();
+                trip.setId(tripId);
+                trip.setAvailableSeats(6);
+                trip.setCar(car);
+                trip.setDriver(driver);
+                trip.setStartDateTime(LocalDateTime.now().plusHours(1));
 
-        verify(mailService, times(1))
-                .confirmEmailtoDriver(result);
+                Booking booking = new Booking();
+                booking.setId(12L);
+                booking.setPassenger(passenger);
+                booking.setTrip(trip);
 
-        verify(mailService, times(1))
-                .confirmEmailtoPassenger(
-                        passenger.getEmail(), result);
-    }
+                when(userService.getOneUser((int) passengerId))
+                                .thenReturn(passenger);
+                when(tripRepository.findById((int) tripId))
+                                .thenReturn(Optional.of(trip));
+                when(bookingRepository.save(ArgumentMatchers.any(Booking.class)))
+                                .thenAnswer(invocation -> invocation.getArgument(0));
+
+                BookDTO bookDTO = new BookDTO(
+                                (int) tripId,
+                                (int) passengerId,
+                                1,
+                                LocalDate.now(),
+                                LocalTime.now(),
+                                "CONFIRM");
+
+                doNothing().when(validator).validate(ArgumentMatchers.any());
+
+                Booking result = bookingService.addBooking(bookDTO);
+
+                // assertNotNull(result);
+
+                verify(mailService, times(1))
+                                .confirmEmailtoDriver(result);
+
+                verify(mailService, times(1))
+                                .confirmEmailtoPassenger(
+                                                passenger.getEmail(), result);
+        }
 }
