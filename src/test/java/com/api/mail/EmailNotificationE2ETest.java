@@ -130,7 +130,7 @@ public class EmailNotificationE2ETest {
         String username = testPassenger.getUsername();
 
         // Act
-        mailService.sendEmail(to, subject, username);
+        mailService.sendLoginEmail(to, subject, username);
 
         // Assert
         verify(javaMailSender, times(1)).createMimeMessage();
@@ -148,7 +148,7 @@ public class EmailNotificationE2ETest {
         String username = testPassenger.getUsername();
 
         // Act
-        mailService.sendEmail(to, subject, username);
+        mailService.sendRegistrationEmail(to, subject, username);
 
         // Assert
         verify(javaMailSender, times(1)).createMimeMessage();
@@ -295,7 +295,7 @@ public class EmailNotificationE2ETest {
 
         // Act & Assert - Should not throw exception due to @Async and try-catch
         assertDoesNotThrow(() -> {
-            mailService.sendEmail(testPassenger.getEmail(), "Test", testPassenger.getUsername());
+            mailService.sendRegistrationEmail(testPassenger.getEmail(), "Test", testPassenger.getUsername());
         });
 
         // Verify that the send method was called
@@ -331,7 +331,7 @@ public class EmailNotificationE2ETest {
 
         // Act - Simulate complete user journey
         // 1. User signs up
-        mailService.sendEmail(testPassenger.getEmail(), "SignUp Successfully.!!!", testPassenger.getUsername());
+        mailService.sendRegistrationEmail(testPassenger.getEmail(), "SignUp Successfully.!!!", testPassenger.getUsername());
 
         // 2. Passenger books a trip
         mailService.confirmEmailtoPassenger(testPassenger.getEmail(), testBooking);

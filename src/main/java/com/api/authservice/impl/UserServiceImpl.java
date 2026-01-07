@@ -10,14 +10,15 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.CachePut;
 
-import com.api.controller.UserController;
+import com.api.dto.LoginUserDTO;
 import com.api.model.User;
 import com.api.repository.UserRepository;
 import com.api.service.UserService;
 import com.api.validation.ObjectValidator;
+
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CachePut;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -30,6 +31,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private ObjectValidator<User> userValidator;
+
+	@Autowired
+	private ObjectValidator<LoginUserDTO> loginUserValidator;
 
 	@Autowired
 	private JwtService jwtService;
@@ -53,16 +57,16 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public String verifyUser(User user) {
+	public String verifyUser(LoginUserDTO user) {
 		logger.info("Inside verifyUser method of UserServiceImpl");
 		logger.info("Validating user details");
-		userValidator.validate(user);
+		loginUserValidator.validate(user);
 
 		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+				new UsernamePasswordAuthenticationToken(user.username(), user.password()));
 		if (authentication.isAuthenticated()) {
 			logger.info("User is authenticated");
-			return jwtService.generateToken(user.getUsername());
+			return jwtService.generateToken(user.username());
 		}
 		logger.info("Exit from verifyUser method of UserServiceImpl");
 		return "Fail";

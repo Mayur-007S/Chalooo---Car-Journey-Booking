@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Login Successful</title>
+</head>
+
+<body style="font-family: Arial, sans-serif; line-height: 1.6;">
+
+	<h2>Login Successful 🔐</h2>
+
+	<p>
+		Dear <strong th:text="${username}">User</strong>,
+	</p>
+
+	<p>
+		This is a confirmation that you have successfully logged in to your <strong>Chaloo
+			App</strong> account.
+	</p>
+
+	<p>If this login was initiated by you, no further action is
+		required. You may continue using the application as usual.</p>
+
+	<p>
+		<strong>Didn’t log in?</strong><br> If you do not recognize this
+		activity, please reset your password immediately or contact our
+		support team.
+	</p>
+
+	<br>
+
+	<p>
+		Regards,<br> <strong>The Chaloo Security Team</strong>
+	</p>
+
+</body>
+</html>

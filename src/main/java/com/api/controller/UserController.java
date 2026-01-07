@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import com.api.authservice.impl.JwtService;
+import com.api.dto.LoginUserDTO;
 import com.api.mail.service.MailService;
 import com.api.model.User;
 import com.api.service.UserService;
@@ -41,19 +42,20 @@ public class UserController {
     	
     	User user1 = userService.addUser(user);
     	if(user1 != null) {
-    		mailService.sendEmail(user.getEmail(), "SignIn Successfully.!!!", user.getUsername());
+    		mailService.sendRegistrationEmail(user.getEmail(), "SignIn Successfully.!!!", user.getUsername());
     		return ResponseEntity.status(HttpStatus.CREATED).body(user1);
     	}
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
     
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody User user) throws MessagingException, IOException {
+    public ResponseEntity<String> login(@RequestBody LoginUserDTO loginuser) throws MessagingException, IOException {
     	logger.info("Inside login method of UserController");
     	
-    	String result = userService.verifyUser(user);
+    	String result = userService.verifyUser(loginuser);
     	if(!result.equalsIgnoreCase("Fail")) {
-    		mailService.sendEmail(user.getEmail(), "SignUp Successfully.!!!", user.getUsername());
+    		User user = userService.UserByUsername(loginuser.username());
+    		mailService.sendLoginEmail(user.getEmail(), "SignIn Successfully.!!!", user.getUsername());
     		return ResponseEntity.status(HttpStatus.CREATED).body(result);
     	}
     	logger.info("Exit from login method of UserController");

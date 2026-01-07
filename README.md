@@ -190,10 +190,11 @@ We do not use Sessions. We use **JWT (JSON Web Tokens)**.
     *   Token contains `sub` (username), `iat` (issued at), `exp` (expiration).
     *   Server returns Token.
 
-2.  **Request Flow**:
-    *   User sends `Authorization: Bearer <token>` header.
-    *   `JwtAuthFilter` intercepts request *before* it reaches Controllers.
-    *   It validates the signature. If valid, it sets the `SecurityContext`.
+2.  **Forgot Password Flow**:
+    *   User requests a reset link via email.
+    *   System generates a unique `PasswordResetToken` (expires in 1 hour).
+    *   User resets password using the token.
+    *   Passwords are encrypted using `BCryptPasswordEncoder(12)`.
 
 **Why?** This allows the server to scale horizontally. No session state is verified on the server RAM.
 
@@ -273,11 +274,10 @@ This is the most critical transaction. The `BookingService` must ensure consiste
 *(Authentication Headers required for most endpoints except Auth)*
 
 ### Auth Endpoints
-*   `POST /api/auth/register` : Create new account.
-    *   *Body*: `{appName, email, password, mobile}`
-*   `POST /api/auth/login` : Get JWT.
-    *   *Body*: `{email, password}`
-    *   *Response*: `{token: "eyJh..."}`
+*   `POST /api/v1/user/register` : Create new account.
+*   `POST /api/v1/user/login` : Get JWT.
+*   `POST /api/v1/user/forgot-password` : Request password reset email.
+*   `POST /api/v1/user/reset-password` : Reset password using token.
 
 ### User Operations
 *   `GET /api/users/profile` : Get specific user details.

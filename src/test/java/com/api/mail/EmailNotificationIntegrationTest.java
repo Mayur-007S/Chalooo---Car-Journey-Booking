@@ -96,7 +96,7 @@ public class EmailNotificationIntegrationTest {
     void testSendRealWelcomeEmail() throws Exception {
         System.out.println("\n📧 Sending real welcome email to: " + TEST_PASSENGER_EMAIL);
 
-        mailService.sendEmail(
+        mailService.sendRegistrationEmail(
                 TEST_PASSENGER_EMAIL,
                 "Welcome to Chaloo - Integration Test",
                 testPassenger.getUsername());
@@ -190,7 +190,7 @@ public class EmailNotificationIntegrationTest {
 
         // 1. Welcome Email
         System.out.println("\n1️⃣ Sending Welcome Email...");
-        mailService.sendEmail(TEST_PASSENGER_EMAIL, "SignUp Successfully.!!!", testPassenger.getUsername());
+        mailService.sendRegistrationEmail(TEST_PASSENGER_EMAIL, "SignUp Successfully.!!!", testPassenger.getUsername());
         Thread.sleep(3000);
 
         // 2. Booking Confirmation - Passenger

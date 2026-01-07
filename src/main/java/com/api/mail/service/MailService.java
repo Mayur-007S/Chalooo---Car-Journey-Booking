@@ -10,7 +10,7 @@ import jakarta.mail.MessagingException;
 
 public interface MailService {
 
-	public void sendEmail(String to, String subject, String username) throws MessagingException, IOException;
+	public void sendRegistrationEmail(String to, String subject, String username) throws MessagingException, IOException;
 
 	public void confirmEmailtoPassenger(String passenger_email, Booking book) throws MessagingException;
 
@@ -23,6 +23,10 @@ public interface MailService {
 	public void sendPaymentReceiptToPassengerEmail(Payment payment) throws MessagingException;
 
 	public void sendBookingCancellationToDriverEmail(Booking booking) throws MessagingException;
-	
+
 	public void sendBookingCancellationToPassengerEmail(Booking booking) throws MessagingException;
+
+	public void sendForgotPasswordEmail(String to, String token) throws MessagingException;
+	
+	public void sendLoginEmail(String to, String subject, String username);
 }

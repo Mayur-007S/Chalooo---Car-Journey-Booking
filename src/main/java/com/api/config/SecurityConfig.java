@@ -43,7 +43,9 @@ public class SecurityConfig {
 		return http.csrf(Customizer -> Customizer.disable())
 				// This is used to disable csrf
 				.authorizeHttpRequests(request -> request
-						.requestMatchers("/api/v1/user/register", "/api/v1/user/login").permitAll()
+						.requestMatchers("/api/v1/user/register", "/api/v1/user/login", "/api/v1/user/forgot-password",
+								"/api/v1/user/reset-password")
+						.permitAll()
 						.requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
 						.anyRequest().authenticated()) // This is used to configure which endpoints are secured and
 														// which are not
@@ -61,9 +63,14 @@ public class SecurityConfig {
 	// We need to create a class that implements UserDetailsService
 	// And override loadUserByUsername method
 	@Bean
+	public BCryptPasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder(12);
+	}
+
+	@Bean
 	public AuthenticationProvider authenticationProvider() {
 		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-		provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
+		provider.setPasswordEncoder(passwordEncoder());
 		provider.setUserDetailsService(userDetailsService);
 		return provider;
 	}

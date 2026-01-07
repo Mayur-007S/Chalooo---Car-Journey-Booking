@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
-import com.api.customeexceptions.MailExceptions;
 import com.api.model.Booking;
 import com.api.model.Payment;
 import com.api.model.Trip;
@@ -35,48 +34,61 @@ public class MailServiceImpl implements MailService {
 
 	@Override
 	@Async("emailExecutor")
-	public void sendEmail(String to, String subject, String username) throws MessagingException, IOException {
-		log.info("Inside send email method.!!!");
+	public void sendRegistrationEmail(String to, String subject, String username) throws MessagingException {
+
+		log.info("Inside sendEmail method");
+
 		try {
 			MimeMessage message = javaMailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
 			helper.setTo(to);
 			helper.setSubject(subject);
+			
+			Context context = new Context();
+			context.setVariable("username",username);
+			
+			String htmlContent = templateEngine.process("AuthEmailTemplate/register-success",context);
 
-			String context = """
-									Loging Successfully.
-					Welcome aboard! Your Chaloo App account is ready.
-							{username}, Welcome to Chaloo App.
-
-					We're absolutely thrilled to welcome you to the
-					Chaloo App family. Your account registration
-					is complete, and you are officially ready to start.
-
-					Click the button below to jump straight into your
-					dashboard and explore all the powerful
-					tools designed just for you.
-
-					We're here to support you every step of the way!
-					If you have any questions or run into trouble,
-					please don't hesitate to reply directly to this
-					email.
-
-					Cheers,
-					      The Chaloo Team
-							""";
-
-			context = context.replace("{username}", username);
-			log.info("Email has sended succefully. {}", to);
-
-			helper.setText(context, true);
+			helper.setText(htmlContent, true); // NOW it's actually HTML
 
 			javaMailSender.send(message);
 
+			log.info("Email sent successfully to {}", to);
+
 		} catch (Exception ex) {
-			log.error("Failed to send login email to {}: {}", to, ex.getMessage());
+			log.error("Failed to send email to {}: {}", to, ex.getMessage(), ex);
 		}
 	}
+	
+	@Override
+	@Async("emailExecutor")
+	public void sendLoginEmail(String to, String subject, String username) {
+		log.info("Inside sendEmail method");
+
+		try {
+			MimeMessage message = javaMailSender.createMimeMessage();
+			MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+			helper.setTo(to);
+			helper.setSubject(subject);
+			
+			Context context = new Context();
+			context.setVariable("username",username);
+			
+			String htmlContent = templateEngine.process("AuthEmailTemplate/login-success",context);
+
+			helper.setText(htmlContent, true); // NOW it's actually HTML
+
+			javaMailSender.send(message);
+
+			log.info("Email sent successfully to {}", to);
+
+		} catch (Exception ex) {
+			log.error("Failed to send email to {}: {}", to, ex.getMessage(), ex);
+		}
+	}
+
 
 	@Override
 	@Async("emailExecutor")
@@ -110,8 +122,7 @@ public class MailServiceImpl implements MailService {
 			javaMailSender.send(message);
 
 		} catch (Exception ex) {
-			log.error("Failed to send confirm booking email to {}: {}",
-					passenger_email, ex.getMessage());
+			log.error("Failed to send confirm booking email to {}: {}", passenger_email, ex.getMessage());
 		}
 	}
 
@@ -135,8 +146,8 @@ public class MailServiceImpl implements MailService {
 			javaMailSender.send(message);
 
 		} catch (Exception ex) {
-			log.error("Failed to send confirm booking email to {}: {}",
-					book.getTrip().getDriver().getEmail(), ex.getMessage());
+			log.error("Failed to send confirm booking email to {}: {}", book.getTrip().getDriver().getEmail(),
+					ex.getMessage());
 		}
 	}
 
@@ -173,8 +184,7 @@ public class MailServiceImpl implements MailService {
 			javaMailSender.send(message);
 
 		} catch (Exception ex) {
-			log.error("Failed to send trip reminder email to {}: {}",
-					trip.getDriver().getEmail(), ex.getMessage());
+			log.error("Failed to send trip reminder email to {}: {}", trip.getDriver().getEmail(), ex.getMessage());
 		}
 	}
 
@@ -211,8 +221,8 @@ public class MailServiceImpl implements MailService {
 			javaMailSender.send(message);
 
 		} catch (Exception ex) {
-			log.error("Failed to send booked trip reminder email to {}: {}",
-					booking.getPassenger().getEmail(), ex.getMessage());
+			log.error("Failed to send booked trip reminder email to {}: {}", booking.getPassenger().getEmail(),
+					ex.getMessage());
 		}
 
 	}
@@ -239,8 +249,8 @@ public class MailServiceImpl implements MailService {
 			javaMailSender.send(message);
 
 		} catch (Exception ex) {
-			log.error("Failed to send payment receipt email to {}: {}",
-					receipt.getBooking().getPassenger().getEmail(), ex.getMessage());
+			log.error("Failed to send payment receipt email to {}: {}", receipt.getBooking().getPassenger().getEmail(),
+					ex.getMessage());
 		}
 	}
 
@@ -265,8 +275,8 @@ public class MailServiceImpl implements MailService {
 			log.info("Email has sent to Passengers: {}", email);
 			javaMailSender.send(message);
 		} catch (Exception ex) {
-			log.error("Failed to send cancel booking email to {}: {}",
-					booking.getPassenger().getEmail(), ex.getMessage());
+			log.error("Failed to send cancel booking email to {}: {}", booking.getPassenger().getEmail(),
+					ex.getMessage());
 		}
 	}
 
@@ -292,8 +302,48 @@ public class MailServiceImpl implements MailService {
 			javaMailSender.send(message);
 
 		} catch (Exception ex) {
-			log.error("Failed to send cancel booking email to {}: {}",
-					booking.getTrip().getDriver().getEmail(), ex.getMessage());
+			log.error("Failed to send cancel booking email to {}: {}", booking.getTrip().getDriver().getEmail(),
+					ex.getMessage());
+		}
+	}
+
+	@Override
+	@Async("emailExecutor")
+	public void sendForgotPasswordEmail(String to, String token) throws MessagingException {
+		log.info("Inside send Forgot Password Email Mathod.");
+		try {
+			MimeMessage message = javaMailSender.createMimeMessage();
+			MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+			String resetLink = "http://localhost:8085/api/v1/user/reset-password?token=" + token;
+
+			helper.setTo(to);
+			helper.setSubject("Password Reset Request – Chaloo");
+			String emailBody = """
+					<html>
+					<body>
+						<h2>Password Reset Request</h2>
+						<p>You requested a password reset for your Chaloo account.</p>
+						<p>Your reset token is: <strong>%s</strong></p>
+						<p>To reset your password, send a POST request to: <br>
+						<code>http://localhost:8085/api/v1/user/reset-password</code></p>
+						<p>With the following JSON body:</p>
+						<pre>
+						{
+						  "token": "%s",
+						  "newPassword": "your_new_password"
+						}
+						</pre>
+						<p>This token will expire in 1 hour.</p>
+					</body>
+					</html>
+					""".formatted(token, token);
+			helper.setText(emailBody, true);
+			log.info("Forgot password email has sent to: {}", to);
+			javaMailSender.send(message);
+
+		} catch (Exception ex) {
+			log.error("Failed to send forgot password email to {}: {}", to, ex.getMessage());
 		}
 	}
 
