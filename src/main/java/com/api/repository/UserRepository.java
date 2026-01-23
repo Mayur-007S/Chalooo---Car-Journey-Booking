@@ -1,5 +1,6 @@
 package com.api.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,5 +19,11 @@ public interface UserRepository extends JpaRepository<User, Long>{
 	User findById(int id);
 	
 	Optional<User> findById(Long id);
-
+	
+	Optional<User> findByPhone(String phone);
+	
+	@Query(value = "SELECT * FROM users WHERE username = :username OR "
+			+ "email = :email OR phone = :phone", nativeQuery = true)
+	Optional<List<User>> userExistOrNot(String username, String email, String phone);
+ 
 }

@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -31,13 +32,23 @@ public class UserController {
     @Autowired
     private MailService mailService;
     
+    @Email(message = "Email not correct please enter correct one!!!")
+    private String email;
+    
     private Logger logger = LoggerFactory.getLogger(UserController.class);
     
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
     
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody User user) throws MessagingException, IOException {
+    public ResponseEntity<?> register(@RequestBody User user) throws MessagingException, IOException {
     	logger.info("Inside register method of UserController");
+    	
+    	email = user.getEmail();
+    	
+    	if(userService.userExistOrNot(user)) {
+    		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("username, email and phone no are alredy exist. please login to continue!!!");
+    	}
+
     	user.setPassword(encoder.encode(user.getPassword()));
     	
     	User user1 = userService.addUser(user);

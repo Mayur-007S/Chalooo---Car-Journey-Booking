@@ -23,4 +23,8 @@ public interface UserService {
 	public User getOneUser(int uid);
 
 	public Optional<User> getOneUser(Long uid);
+	
+	public Optional<User> userByPhoneNo(String phoneno);
+	
+	public Boolean userExistOrNot(User user);
 }

@@ -1,9 +1,6 @@
 package com.api.mail.service;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -12,11 +9,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
-
 import com.api.model.Booking;
 import com.api.model.Payment;
 import com.api.model.Trip;
-
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
@@ -36,7 +31,7 @@ public class MailServiceImpl implements MailService {
 	@Async("emailExecutor")
 	public void sendRegistrationEmail(String to, String subject, String username) throws MessagingException {
 
-		log.info("Inside sendEmail method");
+		log.info("Inside sendEmail method. Thread: {}", Thread.currentThread().getName());
 
 		try {
 			MimeMessage message = javaMailSender.createMimeMessage();
@@ -44,11 +39,11 @@ public class MailServiceImpl implements MailService {
 
 			helper.setTo(to);
 			helper.setSubject(subject);
-			
+
 			Context context = new Context();
-			context.setVariable("username",username);
-			
-			String htmlContent = templateEngine.process("AuthEmailTemplate/register-success",context);
+			context.setVariable("username", username);
+
+			String htmlContent = templateEngine.process("AuthEmailTemplate/register-success", context);
 
 			helper.setText(htmlContent, true); // NOW it's actually HTML
 
@@ -60,11 +55,11 @@ public class MailServiceImpl implements MailService {
 			log.error("Failed to send email to {}: {}", to, ex.getMessage(), ex);
 		}
 	}
-	
+
 	@Override
 	@Async("emailExecutor")
 	public void sendLoginEmail(String to, String subject, String username) {
-		log.info("Inside sendEmail method");
+		log.info("Inside sendEmail method. Thread: {}", Thread.currentThread().getName());
 
 		try {
 			MimeMessage message = javaMailSender.createMimeMessage();
@@ -72,11 +67,11 @@ public class MailServiceImpl implements MailService {
 
 			helper.setTo(to);
 			helper.setSubject(subject);
-			
+
 			Context context = new Context();
-			context.setVariable("username",username);
-			
-			String htmlContent = templateEngine.process("AuthEmailTemplate/login-success",context);
+			context.setVariable("username", username);
+
+			String htmlContent = templateEngine.process("AuthEmailTemplate/login-success", context);
 
 			helper.setText(htmlContent, true); // NOW it's actually HTML
 
@@ -88,7 +83,6 @@ public class MailServiceImpl implements MailService {
 			log.error("Failed to send email to {}: {}", to, ex.getMessage(), ex);
 		}
 	}
-
 
 	@Override
 	@Async("emailExecutor")

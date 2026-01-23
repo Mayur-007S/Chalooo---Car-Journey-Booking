@@ -100,4 +100,21 @@ public class UserServiceImpl implements UserService {
 		logger.info("Inside UserById method of UserServiceImpl");
 		return userRepository.findById(uid);
 	}
+
+	@Override
+	public Optional<User> userByPhoneNo(String phoneno) {
+		logger.info("Inside UserByPhone method of UserServiceImpl");
+		return userRepository.findByPhone(phoneno);
+	}
+
+	@Override
+	public Boolean userExistOrNot(User user) {
+		logger.info("Inside user exits or not method of UserServiceImpl");
+		Optional<List<User>> userlist = userRepository
+				.userExistOrNot(user.getUsername(), user.getEmail(), user.getPhone());
+		if(userlist.isPresent()) {
+			return true;
+		}
+		return false;
+	}
 }
