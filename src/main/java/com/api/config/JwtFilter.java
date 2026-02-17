@@ -33,9 +33,15 @@ public class JwtFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		logger.info("Inside doFilterInternal method of JwtFilter");
-		String authHeader = request.getHeader("Authorization");
 		String token = null;
 		String username = null;
+		
+		if("OPTIONS".equalsIgnoreCase(request.getMethod())){
+			filterChain.doFilter(request, response);
+			return;
+		}
+		
+		String authHeader = request.getHeader("Authorization");
 		
 		logger.info("AuthHeader: "+authHeader);
 		

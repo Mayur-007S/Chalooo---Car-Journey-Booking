@@ -41,11 +41,23 @@ public class CarController {
 		throw new NullPointerException("Car is not added internal serverl error. !!!");
 	}
 
+	@PreAuthorize("hasAnyRole('ADMIN')")
+	@GetMapping("/getAll")
+	public ResponseEntity<List<CarDTO>> getAllCars() 
+ {
+		log.info("Inside get all car controller");
+		List<CarDTO> listofcars = carService.getAll();
+		if (!listofcars.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.CREATED).body(listofcars);
+		}
+		throw new NotFoundException("No cars found");
+	}
+	
 	@PreAuthorize("hasAnyRole('DRIVER','ADMIN')")
 	@GetMapping("/getbyownername")
-	public ResponseEntity<List<Car>> getAllCars(
+	public ResponseEntity<List<Car>> getByOwnerName(
 			@RequestParam(value = "name", required = true) String name) {
-		log.info("Inside get all car controller");
+		log.info("Inside get By Owner Name car controller");
 		List<Car> listofcars = carService.getALLByOwner(name);
 		if (!listofcars.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.CREATED).body(listofcars);

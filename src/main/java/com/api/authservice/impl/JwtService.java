@@ -1,7 +1,10 @@
 package com.api.authservice.impl;
 
 
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,64 +40,91 @@ public class JwtService{
 		secretKey = Base64.getEncoder().encodeToString(key.getEncoded());
 	}
 	
+//	public String generateToken(String username) {
+//		logger.info("Generating token for user: " + username);
+//		Map<String, Object> claims = new HashMap<>();
+//		logger.info("Exiting generateToken method");
+//		return Jwts.builder()
+//				.claims()
+//				.add(claims)
+//				.subject(username)
+//				.issuedAt(new Date(System.currentTimeMillis()))
+//				.expiration(java.sql.Timestamp.valueOf(
+//					    java.time.LocalDateTime.now().plusMonths(6)
+//				))
+//				.and()
+//				.signWith(getKey())
+//				.compact();   
+//	}
+	
 	public String generateToken(String username) {
 		logger.info("Generating token for user: " + username);
-		Map<String, Object> claims = new HashMap<>();
-		logger.info("Exiting generateToken method");
-		return Jwts.builder()
-				.claims()
-				.add(claims)
-				.subject(username)
-				.issuedAt(new Date(System.currentTimeMillis()))
-				.expiration(java.sql.Timestamp.valueOf(
-					    java.time.LocalDateTime.now().plusMonths(6)
-				))
-				.and()
-				.signWith(getKey())
-				.compact();   
+	    return Jwts.builder()
+	        .subject(username)
+	        .issuedAt(new Date())
+	        .expiration(Date.from(
+	            LocalDateTime.now()
+	                .plusMonths(6)
+	                .atZone(ZoneId.systemDefault())
+	                .toInstant()
+	        ))
+	        .signWith(getKey(), Jwts.SIG.HS256)
+	        .compact();
 	}
 
+
+//	private SecretKey getKey() {
+//		logger.info("Getting secret key for JWT");
+//		byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+//		return Keys.hmacShaKeyFor(keyBytes);
+//	}
+//	
 	private SecretKey getKey() {
-		logger.info("Getting secret key for JWT");
-		byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-		logger.info("Secret key obtained successfully");
-		return Keys.hmacShaKeyFor(keyBytes);
+	    return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
 	}
-	
 
 	public String extractUsername(String token) {
-		// TODO Auto-generated method stub
 		return extractClaim(token, Claims::getSubject);
 	}
 
 	private <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
-		// TODO Auto-generated method stub
 		final Claims claims = extractAllClaims(token);
 		return claimResolver.apply(claims);
 	}
 
+//	private Claims extractAllClaims(String token) {
+//		// TODO Auto-generated method stub
+//		return Jwts.parser()
+//				.verifyWith(getKey())
+//				.build()
+//				.parseSignedClaims(token)
+//				.getPayload();
+//	}
+	
 	private Claims extractAllClaims(String token) {
-		// TODO Auto-generated method stub
-		return Jwts.parser()
-				.verifyWith(getKey())
-				.build()
-				.parseSignedClaims(token)
-				.getPayload();
+		logger.info("Inside  extract all  claims  method.");
+	    if (token.startsWith("Bearer ")) {
+	        token = token.substring(7);
+	    }
+
+	    return Jwts.parser()
+	        .verifyWith(getKey())
+	        .build()
+	        .parseSignedClaims(token)
+	        .getPayload();
 	}
 
+
 	public boolean validateToken(String token, UserDetails userDetail) {
-		// TODO Auto-generated method stub
 		final String username = extractUsername(token);
 		return (username.equals(userDetail.getUsername()) && !isTokenExpired(token));
 	}
 
 	private boolean isTokenExpired(String token) {
-		// TODO Auto-generated method stub
 		return extractExpiration(token).before(new Date());
 	}
 
 	private Date extractExpiration(String token) {
-		// TODO Auto-generated method stub
 		return extractClaim(token, Claims::getExpiration);
 	}
 

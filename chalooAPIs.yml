@@ -1,0 +1,892 @@
+openapi: 3.0.0
+info:
+  title: ChalooCar
+  version: 1.0.0
+  description: ''
+servers:
+  - url: http://localhost:8085
+paths:
+  /api/v1/user/register:
+    post:
+      summary: REGISTER
+      responses: {}
+      tags:
+        - User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                username:
+                  type: string
+                password:
+                  type: string
+                phone:
+                  type: integer
+                role:
+                  type: string
+            example:
+              email: ishabell@gmail.com
+              username: isha169
+              password: isha99@Ad!
+              phone: 9000000000
+              role: ROLE_PASSENGER
+  /api/v1/user/login:
+    post:
+      summary: LOGIN
+      responses: {}
+      tags:
+        - User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+            example:
+              username: mayur_007
+              password: mayur223919
+  /api/v1/user/forgot-password:
+    post:
+      summary: FORGOT-PASSWORD
+      responses: {}
+      tags:
+        - User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+            example:
+              email: likaba5891@emaxasp.com
+  /api/v1/user/reset-password:
+    post:
+      summary: NEW-PASSWORD
+      responses: {}
+      tags:
+        - User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                newPassword:
+                  type: string
+            example:
+              token: 1d979c7d-58a0-4c2d-93f9-9a77b6c3bf0e
+              newPassword: TEMP2004
+  /api/v1/user/getByUsername:
+    get:
+      summary: GETBYUSERNAME
+      parameters:
+        - name: username
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+          example: mayur_007
+      responses: {}
+      tags:
+        - User
+      security:
+        - BasicAuth: []
+  /api/v1/admin/getAllUsers:
+    get:
+      summary: GETALLUSERS
+      responses: {}
+      tags:
+        - Admin
+        - GET
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+  /api/v1/bookings/getall:
+    get:
+      summary: GETALLBOOKINGS
+      responses: {}
+      tags:
+        - Admin
+        - GET
+      security:
+        - BasicAuth: []
+  /api/v1/reviews/getAll:
+    get:
+      summary: GETALLREVIEW
+      responses: {}
+      tags:
+        - Admin
+        - GET
+      security:
+        - BasicAuth: []
+  /api/v1/payment/getAll:
+    get:
+      summary: GETALLPAYMENT
+      responses: {}
+      tags:
+        - Admin
+        - GET
+      security:
+        - BasicAuth: []
+  /api/v1/cache/cars:
+    get:
+      summary: CACHEDATA
+      responses: {}
+      tags:
+        - Admin
+        - GET
+      security:
+        - BasicAuth: []
+  /api/v1/admin/email-test-dashboard:
+    get:
+      summary: EMAIL-TEST-DASHBOARD
+      responses: {}
+      tags:
+        - Admin
+        - GET
+      security:
+        - BasicAuth: []
+  /api/v1/cars/getAll:
+    get:
+      summary: New Request
+      responses: {}
+      tags:
+        - Admin
+        - GET
+      security:
+        - BasicAuth: []
+  /api/v1/trip/deletetrip:
+    post:
+      summary: DELETETRIP
+      parameters:
+        - name: tripid
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+          example: '152'
+      responses: {}
+      tags:
+        - Admin
+        - POST
+      security:
+        - BasicAuth: []
+  /api/v1/trip/update:
+    put:
+      summary: UPDATETRIP
+      parameters:
+        - name: tid
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+          example: '102'
+      responses: {}
+      tags:
+        - Admin
+        - POST
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tid:
+                  type: integer
+                source:
+                  type: string
+                destination:
+                  type: string
+                startDateTime:
+                  type: string
+                  format: style
+                departureDateTime:
+                  type: string
+                totalSeats:
+                  type: integer
+                availableSeats:
+                  type: integer
+                driver_id:
+                  type: integer
+                car_id:
+                  type: integer
+            example:
+              tid: 102
+              source: ahilyanagar
+              destination: chtrapati Sambhaji Nagar
+              startDateTime: '2025-11-10T18:00:00'
+              departureDateTime: '2025-11-11T11:00:00'
+              totalSeats: 8
+              availableSeats: 2
+              driver_id: 14
+              car_id: 1
+  /api/v1/cars/update:
+    put:
+      summary: UPDATECAR
+      parameters:
+        - name: cid
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+          example: '402'
+      responses: {}
+      tags:
+        - Admin
+        - POST
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                model:
+                  type: string
+                plateNo:
+                  type: string
+                seats:
+                  type: integer
+                owner_id:
+                  type: integer
+            example:
+              model: Suzuki
+              plateNo: MH-17-A178
+              seats: 6
+              owner_id: 12
+  /api/v1/reviews/deleteReview:
+    post:
+      summary: DELETEREVIEW
+      parameters:
+        - name: reviewId
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+          example: '52'
+      responses: {}
+      tags:
+        - Admin
+        - POST
+      security:
+        - BasicAuth: []
+  /api/v1/bookings/add:
+    post:
+      summary: ADDBOOKING
+      responses: {}
+      tags:
+        - Passenger
+        - Bookings
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                seats_booked:
+                  type: integer
+                status:
+                  type: string
+                passenger_id:
+                  type: integer
+                trip_id:
+                  type: integer
+                time:
+                  type: string
+                  format: time
+                date:
+                  type: string
+                  format: date
+            example:
+              seats_booked: 1
+              status: CONFIRMED
+              passenger_id: 15
+              trip_id: 1553
+              time: '03:50:00'
+              date: '2025-12-17'
+  /api/v1/bookings/getbypassengername:
+    get:
+      summary: GETBYUSERNAME
+      parameters:
+        - name: name
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+          example: kunal007
+      responses: {}
+      tags:
+        - Passenger
+        - Bookings
+      security:
+        - BasicAuth: []
+  /api/v1/bookings/cancel:
+    post:
+      summary: CANCELBOOKING
+      parameters:
+        - name: bookid
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+          example: '105'
+      responses: {}
+      tags:
+        - Passenger
+        - Bookings
+      security:
+        - BasicAuth: []
+  /api/v1/payment/add:
+    post:
+      summary: ADDPAYMENT
+      responses: {}
+      tags:
+        - Passenger
+        - Payment
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                booking_id:
+                  type: integer
+                amount:
+                  type: integer
+                status:
+                  type: string
+                method:
+                  type: string
+            example:
+              booking_id: 103
+              amount: 654
+              status: done
+              method: Online Payment
+  /api/v1/payment/byTripId:
+    get:
+      summary: GETBYTRIPID
+      parameters:
+        - name: tripid
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+          example: '152'
+      responses: {}
+      tags:
+        - Passenger
+        - Payment
+      security:
+        - BasicAuth: []
+  /api/v1/payment/byBookId:
+    get:
+      summary: GETBYBOOKID
+      parameters:
+        - name: bookid
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+          example: '111'
+      responses: {}
+      tags:
+        - Passenger
+        - Payment
+      security:
+        - BasicAuth: []
+  /api/v1/trip/getall:
+    get:
+      summary: GETALLTRIP
+      responses: {}
+      tags:
+        - Passenger
+        - Trip
+      security:
+        - BasicAuth: []
+  /api/v1/trip/getSD:
+    get:
+      summary: SOURCE&DEST
+      parameters:
+        - name: source
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+          example: Swargat, Pune
+        - name: dest
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+          example: CST, Mumbai
+      responses: {}
+      tags:
+        - Passenger
+        - Trip
+      security:
+        - BasicAuth: []
+  /api/v1/trip/sourceAndDestDate:
+    get:
+      summary: SOURCE&DESTorDATE
+      parameters:
+        - name: source
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+          example: Ahilyanagar
+        - name: dest
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+          example: Pune(Dhankaawadi)
+        - name: date
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+          example: '2025-12-16'
+      responses: {}
+      tags:
+        - Passenger
+        - Trip
+      security:
+        - BasicAuth: []
+  /api/v1/reviews/add:
+    post:
+      summary: ADDREVIEW
+      responses: {}
+      tags:
+        - Passenger
+        - Review
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reviewer_id:
+                  type: integer
+                subject_id:
+                  type: integer
+                trip_id:
+                  type: integer
+                rating:
+                  type: integer
+                comment:
+                  type: string
+                date:
+                  type: string
+                  format: date
+                time:
+                  type: string
+                  format: time
+            example:
+              reviewer_id: 26
+              subject_id: 26
+              trip_id: 152
+              rating: 5
+              comment: The driver is smart he know fast root.
+              date: '2025-11-21'
+              time: '12:32:00'
+  /api/v1/reviews/deleteOwnReview:
+    post:
+      summary: DELETEOWNREVIEW
+      parameters:
+        - name: reviewId
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+          example: '402'
+        - name: userId
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+          example: '26'
+      responses: {}
+      tags:
+        - Passenger
+        - Review
+      security:
+        - BasicAuth: []
+  /api/v1/trip/add:
+    post:
+      summary: ADDTRIP
+      responses: {}
+      tags:
+        - Driver
+        - Trip
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                source:
+                  type: string
+                destination:
+                  type: string
+                startDateTime:
+                  type: string
+                  format: style
+                departureDateTime:
+                  type: string
+                totalSeats:
+                  type: integer
+                availableSeats:
+                  type: integer
+                driver_id:
+                  type: integer
+                car_id:
+                  type: integer
+            example:
+              source: Nashik
+              destination: Kolhapur
+              startDateTime: '2025-12-25T14:45:00'
+              departureDateTime: ''
+              totalSeats: 6
+              availableSeats: 6
+              driver_id: 14
+              car_id: 254
+  /api/v1/trip/getByDriverName:
+    get:
+      summary: TRIPBYDRIVERNAME
+      parameters:
+        - name: drivername
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+          example: mayur_007
+      responses: {}
+      tags:
+        - Driver
+        - Trip
+      security:
+        - BasicAuth: []
+  /api/v1/trip/deleteowntrip:
+    post:
+      summary: DELETEBYOWNTRIP
+      parameters:
+        - name: tripid
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+          example: '102'
+        - name: driverid
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+          example: '16'
+      responses: {}
+      tags:
+        - Driver
+        - Trip
+      security:
+        - BasicAuth: []
+      description: >-
+        Purpose  
+
+        Cancels a trip initiated by the authenticated driver themselves. Use
+        when a driver needs to cancel their own active or scheduled trip.
+
+
+        Method and URL  
+
+        POST /api/v1/trip/cancelOwnTrip  
+
+        Base: [http://localhost:8085](http://localhost:8085)
+
+
+        Query parameters
+
+
+        - tripid (required, integer): The unique ID of the trip to cancel.
+            
+        - driverid (required, integer): The unique ID of the driver performing
+        the cancellation.
+            
+
+        Example  
+
+        POST
+        [http://localhost:8085/api/v1/trip/cancelOwnTrip?tripid=152&amp;driverid=16](http://localhost:8085/api/v1/trip/cancelOwnTrip?tripid=152&driverid=16)
+
+
+        Authentication  
+
+        If your API requires auth, configure it in the Authorization tab (for
+        example, a Bearer token).
+
+
+        Request body  
+
+        None. This endpoint expects only query parameters.
+
+
+        Responses
+
+
+        - 200 OK: Trip cancellation acknowledged. The response may include
+        confirmation details.
+            
+        - 400 Bad Request: Missing or invalid tripid/driverid.
+            
+        - 401/403 Unauthorized/Forbidden: Authentication or permission issues.
+            
+        - 404 Not Found: Trip not found or not associated with the driver.
+            
+        - 409 Conflict: Trip cannot be canceled due to its current status (e.g.,
+        already completed).
+            
+        - 5xx Server Error: An unexpected error occurred on the server.
+            
+
+        Notes
+
+
+        - Ensure tripid corresponds to a trip owned by the driverid.
+            
+        - Consider using variables for local setups: {{baseUrl}} =
+        [http://localhost:8085](http://localhost:8085), then call:
+        {{baseUrl}}/api/v1/trip/cancelOwnTrip?tripid={{tripid}}&driverid={{driverid}}.
+            
+        - Known good sample values from this workspace: tripid: 152 or 902;
+        driverid: 16 or 14 (derived from request history for this request).
+            
+
+        Changelog
+
+
+        - Initial documentation added.
+  /api/v1/trip/updateowntrip:
+    put:
+      summary: UPDATEOWNTRIP
+      parameters:
+        - name: tid
+          in: query
+          schema:
+            type: integer
+          example: '152'
+        - name: driverid
+          in: query
+          schema:
+            type: integer
+          example: '14'
+      responses: {}
+      tags:
+        - Driver
+        - Trip
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tid:
+                  type: integer
+                source:
+                  type: string
+                destination:
+                  type: string
+                startDateTime:
+                  type: string
+                  format: style
+                departureDateTime:
+                  type: string
+                totalSeats:
+                  type: integer
+                availableSeats:
+                  type: integer
+                driver_id:
+                  type: integer
+                car_id:
+                  type: integer
+            example:
+              tid: 152
+              source: ahilyanagar
+              destination: pune
+              startDateTime: '2025-11-18T10:00:00'
+              departureDateTime: '2025-11-18T01:00:00'
+              totalSeats: 8
+              availableSeats: 5
+              driver_id: 14
+              car_id: 1
+  /api/v1/cars/add:
+    post:
+      summary: ADDCAR
+      responses: {}
+      tags:
+        - Driver
+        - Car
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                model:
+                  type: string
+                plateNo:
+                  type: string
+                seats:
+                  type: integer
+                owner_id:
+                  type: integer
+            example:
+              model: Suzuki
+              plateNo: MH-17-A178
+              seats: 5
+              owner_id: 12
+  /api/v1/cars/getbyownername:
+    get:
+      summary: GETBYOWNERNAME
+      parameters:
+        - name: name
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+          example: mayur_007
+      responses: {}
+      tags:
+        - Driver
+        - Car
+      security:
+        - BasicAuth: []
+  /api/v1/cars/deletebyownername:
+    post:
+      summary: DELETEOWNCAR
+      parameters:
+        - name: cid
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+          example: '402'
+        - name: name
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+          example: nidhi
+      responses: {}
+      tags:
+        - Driver
+        - Car
+      security:
+        - BasicAuth: []
+  /api/v1/cars/updateowncar:
+    put:
+      summary: UPDATECAR
+      parameters:
+        - name: cid
+          in: query
+          schema:
+            type: integer
+          example: '402'
+        - name: driverid
+          in: query
+          schema:
+            type: integer
+          example: '16'
+      responses: {}
+      tags:
+        - Driver
+        - Car
+      security:
+        - BasicAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                model:
+                  type: string
+                plateNo:
+                  type: string
+                seats:
+                  type: integer
+                owner_id:
+                  type: integer
+            example:
+              model: Suzuki
+              plateNo: MH-17-A178
+              seats: 6
+              owner_id: 12
+  /api/v1/reviews/getByTripId:
+    get:
+      summary: GETBYTRIPID
+      parameters:
+        - name: tripid
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+          example: '152'
+      responses: {}
+      tags:
+        - Driver
+        - Review
+      security:
+        - BasicAuth: []
+  /api/v1/payment/byDriver:
+    get:
+      summary: GETBYDRIVER
+      parameters:
+        - name: driverId
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+          example: '12'
+      responses: {}
+      tags:
+        - Driver
+        - Payment
+      security:
+        - BasicAuth: []
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic

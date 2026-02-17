@@ -73,14 +73,14 @@ public class BookingController {
 	public ResponseEntity<List<Booking>> getBookingByPassengerName(
 			@RequestParam(value = "name", required = true) String name) {
 		log.info("Inside get by passenger name bookings method");
-		User user = userService.UserByUsername(name.toLowerCase());
+		var user = userService.UserByUsername(name.toLowerCase());
 		log.info("User: " + user);
 		if (user == null) {
 			throw new NotFoundException(
 					"Booking not foud with name: " + name + " The given name that user is not found in database.");
 		}
 		log.info("User ");
-		List<Booking> listofbooking = service.getBookingByPassengerName(user.getId());
+		List<Booking> listofbooking = service.getBookingByPassengerName(user.id());
 		log.info("listofbookings: " + listofbooking);
 		if (listofbooking == null) {
 			throw new NotFoundException(

@@ -26,6 +26,9 @@ public class TripMapper {
 	@Autowired
 	private  UserService userService;
 	
+	@Autowired
+	private UserMapper userMapper;
+	
 	private  Logger log = LoggerFactory.getLogger(TripMapper.class);
 	
 
@@ -72,14 +75,13 @@ public class TripMapper {
 		trip.setDestination(dto.destination());
 		trip.setAvailableSeats(dto.availableSeats());
 		trip.setTotalSeats(dto.totalSeats());
-		User driver = userService.getOneUser(dto.driver_id())
+		var driver = userService.getOneUser(dto.driver_id())
 				.orElseThrow(() -> new NotFoundException("Driver not found with id: " + dto.driver_id()));
 		Car car = carService.getOneCar(dto.car_id())
 				.orElseThrow(() -> new NotFoundException("Car not found with id: " + dto.car_id()));
 
-		trip.setDriver(driver);
+		trip.setDriver(userMapper.dtoTOuser(driver));
 		trip.setCar(car);
-		
 		return trip;
 	}
 }

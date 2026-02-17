@@ -14,6 +14,8 @@ import org.springframework.cache.annotation.CacheEvict;
 
 import com.api.customeexceptions.NotFoundException;
 import com.api.dto.CarDTO;
+import com.api.dto.mapper.CarMapper;
+import com.api.dto.mapper.UserMapper;
 import com.api.model.Booking;
 import com.api.model.Car;
 import com.api.model.User;
@@ -34,6 +36,10 @@ public class CarServiceImpl implements CarService {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired private UserMapper userMapper;
+	
+	@Autowired private CarMapper carMapper;
 
 	private Logger log = LoggerFactory.getLogger(CarServiceImpl.class);
 
@@ -46,12 +52,12 @@ public class CarServiceImpl implements CarService {
 		car.setModel(cardto.model());
 		car.setPlateNo(cardto.plateNo());
 		car.setSeats(cardto.seats());
-		User user = userService.getOneUser(cardto.owner_id());
+		var user = userService.getOneUser(cardto.owner_id());
 		if (user == null) {
 			throw new NotFoundException("Owner with id: " + cardto.owner_id()
 					+ " not found. Please enter valide ownere id. !!!");
 		}
-		car.setOwner(user);
+		car.setOwner(userMapper.dtoTOuser(user.get()));
 
 		return repository.save(car);
 	}
@@ -59,14 +65,15 @@ public class CarServiceImpl implements CarService {
 	@Override
 	public List<Car> getALLByOwner(String username) {
 		log.info("Inside get all car method");
-		User user = userService.UserByUsername(username);
-		if (user == null) {
+		var userdto = userService.UserByUsername(username);
+		if (userdto == null) {
 			throw new NotFoundException("No user found with owner name: " + username);
 		}
 
-		return repository.findAll().stream()
-				.filter(c -> c.getOwner().getId() != null && c.getOwner().getId() == user.getId())
-				.toList();
+		var car = repository.findByOwnerId(userdto.id());
+		car.stream().map(c -> userMapper.userToUserDTO(c.getOwner()))
+		.toList();
+		return car;
 	}
 
 	@Transactional(rollbackFor = { NotFoundException.class })
@@ -82,12 +89,12 @@ public class CarServiceImpl implements CarService {
 		car1.setPlateNo(cardto.plateNo());
 		car1.setSeats(cardto.seats());
 
-		User user = userService.getOneUser(cardto.owner_id());
+		var user = userService.getOneUser(cardto.owner_id());
 		if (user == null) {
 			throw new NotFoundException("Owner with id: " + cardto.owner_id()
 					+ " not found. Please enter valide ownere id. !!!");
 		}
-		car1.setOwner(user);
+		car1.setOwner(userMapper.dtoTOuser(user.get()));
 
 		return repository.save(car1);
 	}
@@ -97,13 +104,13 @@ public class CarServiceImpl implements CarService {
 	@CacheEvict(value = "cars", key = "#cid")
 	public void deleteCarByOwner(String username, long cid) {
 		log.info("Inside delete car method");
-		User user = userService.UserByUsername(username);
+		var user = userService.UserByUsername(username);
 		if (user == null) {
 			throw new NotFoundException("No user found with owner name: " + username);
 		}
 
 		if (repository.existsById(cid)) {
-			repository.deleteByOwnerId(cid, user.getId());
+			repository.deleteByOwnerId(cid, user.id());
 		} else {
 			throw new NotFoundException("Car with id: " + cid + " not found. !!!");
 		}
@@ -115,5 +122,12 @@ public class CarServiceImpl implements CarService {
 	public Optional<Car> getOneCar(Long cid) {
 		log.info("Inside get one car method");
 		return repository.findById(cid);
+	}
+
+	@Override
+	public List<CarDTO> getAll() {
+		log.info("Inside get all method in car service impl.");
+		var car = repository.findAll();
+		return carMapper.carTOdto(car);
 	}
 }

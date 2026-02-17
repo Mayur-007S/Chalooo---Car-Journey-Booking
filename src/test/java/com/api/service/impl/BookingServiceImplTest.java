@@ -24,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.api.dto.BookDTO;
 import com.api.dto.mapper.BookingMapper;
 import com.api.dto.mapper.TripMapper;
+import com.api.dto.mapper.UserMapper;
 import com.api.mail.service.MailService;
 import com.api.model.Booking;
 import com.api.model.Car;
@@ -74,6 +75,9 @@ class BookingServiceImplTest {
 
 	@Mock
 	private TripMapper mapper;
+	
+	@Mock
+	private UserMapper userMapper;
 
 	@BeforeEach
 	void setUp() {
@@ -112,7 +116,7 @@ class BookingServiceImplTest {
 		booking.setPassenger(passenger);
 		booking.setTrip(trip);
 
-		when(userService.getOneUser((int) passengerId)).thenReturn(passenger);
+		when(userService.getOneUser((int) passengerId)).thenReturn(userMapper.userToUserDTO(driver));
 		when(tripRepository.findById((int) tripId)).thenReturn(Optional.of(trip));
 		when(bookingRepository.save(ArgumentMatchers.any(Booking.class)))
 				.thenAnswer(invocation -> invocation.getArgument(0));

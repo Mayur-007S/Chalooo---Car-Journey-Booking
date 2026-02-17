@@ -26,6 +26,7 @@ import org.w3c.dom.NodeList;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.api.dto.UserDTO;
 import com.api.model.User;
 import com.api.service.UserService;
 
@@ -39,9 +40,9 @@ public class AdminController {
 	private Logger logger = LoggerFactory.getLogger(AdminController.class);
 
 	@GetMapping("/getAllUsers")
-	public ResponseEntity<List<User>> getUsers() {
+	public ResponseEntity<List<?>> getUsers() {
 		logger.info("Inside get all users method");
-		List<User> users = userService.getAllUsers();
+		List<UserDTO> users = userService.getAllUsers();
 		if (!users.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.OK).body(users);
 		}

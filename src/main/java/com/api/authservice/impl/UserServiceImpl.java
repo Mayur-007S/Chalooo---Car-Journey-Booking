@@ -2,50 +2,57 @@ package com.api.authservice.impl;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-
 import com.api.dto.LoginUserDTO;
+import com.api.dto.UserDTO;
+import com.api.dto.mapper.UserMapper;
 import com.api.model.User;
 import com.api.repository.UserRepository;
 import com.api.service.UserService;
 import com.api.validation.ObjectValidator;
-
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CachePut;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-	@Autowired
 	private UserRepository userRepository;
-
-	@Autowired
 	private AuthenticationManager authenticationManager;
-
-	@Autowired
 	private ObjectValidator<User> userValidator;
-
-	@Autowired
 	private ObjectValidator<LoginUserDTO> loginUserValidator;
-
-	@Autowired
 	private JwtService jwtService;
-
-	private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
-
-	@Override
-	public List<User> getAllUsers() {
-		logger.info("Inside getAllUsers method of UserServiceImpl");
-		return userRepository.findAll();
+	private UserMapper userMapper;
+	private Logger logger;
+	
+	public UserServiceImpl(UserRepository userRepository, 
+			AuthenticationManager authenticationManager,
+			ObjectValidator<User> userValidator, 
+			ObjectValidator<LoginUserDTO> loginUserValidator,
+			JwtService jwtService, UserMapper userMapper
+			) 
+	{
+		this.userRepository = userRepository;
+		this.authenticationManager = authenticationManager;
+		this.userValidator = userValidator;
+		this.loginUserValidator = loginUserValidator;
+		this.jwtService = jwtService;
+		this.userMapper = userMapper;
+		this.logger = LoggerFactory.getLogger(UserServiceImpl.class);
 	}
 
+	@Override
+	public List<UserDTO> getAllUsers() {
+		logger.info("Inside getAllUsers method of UserServiceImpl");
+		List<User> users = userRepository.findAll();
+		return userMapper.userToUserDTO(users);
+	}
+
+	@SuppressWarnings("null")
 	@Override
 	@CachePut(value = "users", key = "#result.id")
 	public User addUser(User user) {
@@ -74,37 +81,41 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Cacheable(value = "users", key = "#email")
-	public User UserByEmail(String email) {
+	public UserDTO UserByEmail(String email) {
 		logger.info("Inside UserByEmail method of UserServiceImpl");
-		logger.info("Exit from UserByEmail method of UserServiceImpl");
-		return userRepository.findByEmail(email.toLowerCase());
+		var user = userRepository.findByEmail(email.toLowerCase());
+		return userMapper.userToUserDTO(user);
 	}
 
 	@Override
 	@Cacheable(value = "users", key = "#username")
-	public User UserByUsername(String username) {
+	public UserDTO UserByUsername(String username) {
 		logger.info("Inside UserByName method of UserServiceImpl");
-		return userRepository.findByUsername(username.toLowerCase());
+		var user = userRepository.findByUsername(username.toLowerCase());
+		return userMapper.userToUserDTO(user);
 	}
 
 	@Override
 	@Cacheable(value = "users", key = "#uid")
-	public User getOneUser(int uid) {
+	public UserDTO getOneUser(int uid) {
 		logger.info("Inside UserById method of UserServiceImpl");
-		return userRepository.findById(uid);
+		var user = userRepository.findById(uid);
+		return userMapper.userToUserDTO(user);
 	}
 
 	@Override
 	@Cacheable(value = "users", key = "#uid")
-	public Optional<User> getOneUser(Long uid) {
+	public Optional<UserDTO> getOneUser(Long uid) {
 		logger.info("Inside UserById method of UserServiceImpl");
-		return userRepository.findById(uid);
+		var user = userRepository.findById(uid);
+		return Optional.of(userMapper.userToUserDTO(user.get()));
 	}
 
 	@Override
-	public Optional<User> userByPhoneNo(String phoneno) {
+	public Optional<UserDTO> userByPhoneNo(String phoneno) {
 		logger.info("Inside UserByPhone method of UserServiceImpl");
-		return userRepository.findByPhone(phoneno);
+		 var user = userRepository.findByPhone(phoneno);
+		 return Optional.of(userMapper.userToUserDTO(user.get()));
 	}
 
 	@Override
@@ -113,8 +124,16 @@ public class UserServiceImpl implements UserService {
 		Optional<List<User>> userlist = userRepository
 				.userExistOrNot(user.getUsername(), user.getEmail(), user.getPhone());
 		if(userlist.isPresent()) {
+			logger.info("result: true");
 			return true;
 		}
+		logger.info("result: false");
 		return false;
+	}
+
+	@Override
+	public String emailByPassword(String email) {
+		logger.info("Inside emailByPassword method of userServiceImpl.");
+		return userRepository.findPasswordByEmail(email);
 	}
 }

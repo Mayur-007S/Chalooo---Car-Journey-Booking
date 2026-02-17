@@ -10,6 +10,8 @@ public interface CarService {
 
 	Car addCar(CarDTO cardto);
 	
+	List<CarDTO> getAll();
+	
 	List<Car> getALLByOwner(String username);
 	
 	Car updateCar(long cid,CarDTO car);

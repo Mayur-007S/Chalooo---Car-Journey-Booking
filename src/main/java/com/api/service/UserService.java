@@ -4,27 +4,30 @@ import java.util.List;
 import java.util.Optional;
 
 import com.api.dto.LoginUserDTO;
+import com.api.dto.UserDTO;
 import com.api.model.User;
 
 public interface UserService {
 
 	// public String getUserRole(Long userId);
 
-	public List<User> getAllUsers();
+	public List<UserDTO> getAllUsers();
 
 	public User addUser(User user);
 
-	public User UserByEmail(String email);
+	public UserDTO UserByEmail(String email);
 
-	public User UserByUsername(String username);
+	public UserDTO UserByUsername(String username);
 
 	public String verifyUser(LoginUserDTO user);
 
-	public User getOneUser(int uid);
+	public UserDTO getOneUser(int uid);
 
-	public Optional<User> getOneUser(Long uid);
+	public Optional<UserDTO> getOneUser(Long uid);
 	
-	public Optional<User> userByPhoneNo(String phoneno);
+	public Optional<UserDTO> userByPhoneNo(String phoneno);
 	
 	public Boolean userExistOrNot(User user);
+	
+	public String emailByPassword(String email);
 }

@@ -24,6 +24,11 @@ public interface UserRepository extends JpaRepository<User, Long>{
 	
 	@Query(value = "SELECT * FROM users WHERE username = :username OR "
 			+ "email = :email OR phone = :phone", nativeQuery = true)
-	Optional<List<User>> userExistOrNot(String username, String email, String phone);
+	Optional<List<User>> userExistOrNot(
+			@Param("username") String username, 
+			@Param("email") String email, 
+			@Param("phone") String phone);
  
+	@Query(value = "SELECT password FROM users WHERE email = :email", nativeQuery = true)
+	String findPasswordByEmail(@Param("email") String email);
 }

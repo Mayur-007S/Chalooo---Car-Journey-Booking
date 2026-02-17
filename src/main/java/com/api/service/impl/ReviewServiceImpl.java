@@ -16,6 +16,7 @@ import com.api.customeexceptions.NotFoundException;
 import com.api.dto.ReviewDTO;
 
 import com.api.dto.mapper.TripMapper;
+import com.api.dto.mapper.UserMapper;
 import com.api.model.Review;
 import com.api.model.Trip;
 import com.api.model.User;
@@ -40,6 +41,9 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Autowired
 	private TripMapper mapper;
+	
+	@Autowired
+	private UserMapper reviewerMapper;
 
 	private Logger log = LoggerFactory.getLogger(ReviewServiceImpl.class);
 
@@ -59,17 +63,17 @@ public class ReviewServiceImpl implements ReviewService {
 		review.setDate(reviewdto.date());
 		review.setTime(reviewdto.time());
 
-		User reviewer = userService.getOneUser(reviewdto.reviewer_id());
+		var reviewer = userService.getOneUser(reviewdto.reviewer_id());
 		if (reviewer == null) {
 			throw new NotFoundException("Reviewer not found for id: " + reviewdto.reviewer_id());
 		}
-		review.setReviewer(reviewer);
+		review.setReviewer(reviewerMapper.dtoTOuser(reviewer));
 
-		User subject = userService.getOneUser(reviewdto.subject_id());
+		var subject = userService.getOneUser(reviewdto.subject_id());
 		if (subject == null) {
 			throw new NotFoundException("Subject not found for id: " + reviewdto.subject_id());
 		}
-		review.setSubject(subject);
+		review.setSubject(reviewerMapper.dtoTOuser(subject));
 
 		Trip trip = tripRepository.findById(reviewdto.trip_id())
 				.orElseThrow(() -> new NotFoundException("Trip not found for id: "

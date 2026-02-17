@@ -17,6 +17,7 @@ import com.api.customeexceptions.NotFoundException;
 import com.api.dto.BookDTO;
 
 import com.api.dto.mapper.TripMapper;
+import com.api.dto.mapper.UserMapper;
 import com.api.mail.service.MailService;
 import com.api.model.Booking;
 
@@ -60,6 +61,8 @@ public class BookingServiceImpl implements BookingService {
 	
 	@Autowired
 	private MailService mailService;
+	
+	@Autowired private UserMapper userMapper;
 
 	
 	@Transactional(rollbackFor = { IllegalStateException.class, NotFoundException.class })
@@ -82,9 +85,10 @@ public class BookingServiceImpl implements BookingService {
 	    }
 
 
-		User user = userService.getOneUser(dto.passenger_id());
+		var user = userService.getOneUser(dto.passenger_id());
 		if (user == null) {
-			throw new NotFoundException("User not found with passenger id: " + dto.passenger_id());
+			throw new NotFoundException("User not found with passenger id: " + 
+						dto.passenger_id());
 		}
 
 		Booking book = new Booking();
@@ -93,7 +97,7 @@ public class BookingServiceImpl implements BookingService {
 		book.setDate(dto.date());
 		book.setTime(dto.time());
 		book.setStatus(dto.status().toUpperCase());
-		book.setPassenger(user);
+		book.setPassenger(userMapper.dtoTOuser(user));
 
 		trip.setAvailableSeats(trip.getAvailableSeats() - dto.seatsBooked());
 
